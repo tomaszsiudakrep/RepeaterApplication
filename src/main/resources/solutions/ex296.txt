@@ -1,0 +1,13 @@
+int [] tab = new int[20];
+    double sum = 0;
+    int firstValue = 1;
+
+    public void avgTab() {
+        for (int n = 0; n < 20; n++){
+            tab[n] += firstValue;
+            sum += tab[n];
+            firstValue++;
+            double result = sum;
+            System.out.println(result);
+        }
+    }
