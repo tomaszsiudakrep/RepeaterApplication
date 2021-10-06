@@ -1,4 +1,4 @@
-package com.quiz.quizapplication.database;
+package com.quiz.quizapplication;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
