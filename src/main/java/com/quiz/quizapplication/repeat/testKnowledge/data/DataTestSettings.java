@@ -2,6 +2,7 @@ package com.quiz.quizapplication.repeat.testKnowledge.data;
 
 import com.quiz.quizapplication.database.ConnectToDb;
 import com.quiz.quizapplication.DataFromDb;
+import com.quiz.quizapplication.importantInformation.data.add.DataAddInformationGroup;
 import com.quiz.quizapplication.repeat.testKnowledge.scene.TestScene;
 import com.quiz.quizapplication.repeat.testKnowledge.scene.TestSettingsScene;
 
@@ -10,9 +11,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Random;
 
-public class TestSettings {
+public class DataTestSettings {
 
     DataFromDb dataFromDb = new DataFromDb();
+    DataAddInformationGroup dataAddInformationGroup = new DataAddInformationGroup();
 
     public static void plusOne() {
         TestSettingsScene.countOfExercises++;
@@ -26,11 +28,11 @@ public class TestSettings {
     }
 
 
-    public void createlist() throws SQLException {
+    public void createList() throws SQLException {
         TestSettingsScene.listOfExercises =  dataFromDb.loadListWithExercisesId2(TestSettingsScene.groupName);
     }
 
-    public void sizeOfList() throws SQLException {
+    public void sizeOfList() {
         int size =  TestSettingsScene.listOfExercises.size();
         if (TestSettingsScene.countOfExercises > size) {
             TestSettingsScene.countOfExercises = size;
@@ -63,5 +65,37 @@ public class TestSettings {
         statement.close();
     }
 
+    public void displayExercisesToTest(String sqlQuery) throws SQLException {
+        Statement statement = ConnectToDb.getInstance().getConn().createStatement();
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()) {
+            int id = resultSet.getInt("ID");
+                TestScene.idTextField.setText(id + "");
+            String title = resultSet.getString("TITLE");
+                TestScene.titleTextField.setText(title);
+            String description = resultSet.getString("DESCRIPTION");
+                TestScene.descriptionAreaText.setText(description);
+        }
+        resultSet.close();
+        statement.close();
+    }
+
+    public String downloadGroupName() {
+        return TestSettingsScene.groupName = TestSettingsScene.choiceBoxGroup.getValue();
+    }
+
+    public boolean countOfExInGroup(String groupName) throws SQLException {
+        boolean result = true;
+        int size = 0;
+        String sqlQuery = "SELECT * FROM EXERCISES WHERE GROUP_ID = (Select ID from GROUP_EXERCISES where name = '" + groupName + "') and archived = 0";
+        Statement statement = ConnectToDb.getInstance().getConn().createStatement();
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        while (resultSet.next()) {
+            size++;
+        }
+        if (size > 0) result = false;
+        return result;
+    }
 
 }

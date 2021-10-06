@@ -1,4 +1,4 @@
-package com.quiz.quizapplication.data;
+package com.quiz.quizapplication.data.timers;
 
 import com.quiz.quizapplication.controller.CountdownTimerController;
 import com.quiz.quizapplication.repeat.testKnowledge.scene.TestSettingsScene;

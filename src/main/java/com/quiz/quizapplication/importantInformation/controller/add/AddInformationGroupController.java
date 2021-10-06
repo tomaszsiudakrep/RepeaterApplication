@@ -1,16 +1,15 @@
 package com.quiz.quizapplication.importantInformation.controller.add;
 
-import com.quiz.quizapplication.importantInformation.data.add.AlertAddGroup;
+import com.quiz.quizapplication.data.alerts.AlertAddGroup;
 import com.quiz.quizapplication.importantInformation.objects.GroupInformation;
 import com.quiz.quizapplication.importantInformation.scene.add.AddGroupInformationScene;
 import com.quiz.quizapplication.importantInformation.data.add.DataAddInformationGroup;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
-
 import java.sql.SQLException;
 
-public class AddGroupController {
+public class AddInformationGroupController {
 
     GroupInformation groupInformation;
     DataAddInformationGroup dataAddInformationGroup = new DataAddInformationGroup();
@@ -18,10 +17,9 @@ public class AddGroupController {
 
     public void addGroupImportantInformation() throws SQLException {
         String groupName = dataAddInformationGroup.downloadGroupNameToAdd().toUpperCase();
-        String sqlQuery = dataAddInformationGroup.sqlQuerySelectAllFromGroupWhereName(groupName);
         groupInformation =  dataAddInformationGroup.createGroupObject(groupName);
-        if (dataAddInformationGroup.checkIfGroupNameIsNotNull() && dataAddInformationGroup.checkIfGroupNameNotExist(sqlQuery)) {
-            boolean result = dataAddInformationGroup.addGroup();
+        if (dataAddInformationGroup.checkIfGroupNameIsNotNull(groupName) && dataAddInformationGroup.checkIfGroupNameNotExist(groupName)) {
+            boolean result = dataAddInformationGroup.addGroup(groupInformation);
                 if (result) alertAddGroup.groupHasBeenAdded();
                 else alertAddGroup.groupWasNotAdded();
         } else {
@@ -34,11 +32,9 @@ public class AddGroupController {
     public void changeGroupName() throws SQLException {
         String groupName = dataAddInformationGroup.downloadGroupNameFromChoiceBox();
         String newGroupName = dataAddInformationGroup.downloadNewGroupNameToChangeTitle().toUpperCase();
-        String sqlQuery = dataAddInformationGroup.sqlQuerySelectAllFromGroupWhereName(newGroupName);
-        boolean groupNotExist = dataAddInformationGroup.checkIfGroupNameNotExist(sqlQuery);
+        boolean groupNotExist = dataAddInformationGroup.checkIfGroupNameNotExist(groupName);
         if (groupNotExist && !newGroupName.equals("") && groupName != null) {
-            String sqlQueryUpdate = dataAddInformationGroup.sqlQueryUpdateGroupName(newGroupName, groupName);
-            boolean result = dataAddInformationGroup.changeGroupName(sqlQueryUpdate);
+            boolean result = dataAddInformationGroup.changeGroupName(newGroupName, groupName);
             if (result) alertAddGroup.groupNameHasBeenChanged();
             else alertAddGroup.groupNameWasNotChanged();
         }
@@ -51,11 +47,10 @@ public class AddGroupController {
 
     public void deleteGroup() throws SQLException {
         String groupName = dataAddInformationGroup.downloadGroupNameFromChoiceBox();
-        String sqlQuery = dataAddInformationGroup.sqlQueryDeleteGroup(groupName);
         if (groupName != null) {
             AlertAddGroup.dialogConfirmation.showAndWait();
             if (AlertAddGroup.dialogConfirmation.getResult() == ButtonType.OK) {
-                boolean result = dataAddInformationGroup.deleteGroup(sqlQuery);
+                boolean result = dataAddInformationGroup.deleteGroup(groupName);
                 if (result) alertAddGroup.groupHasBeenDeleted();
                 else alertAddGroup.groupWasNotDeleted();
                 AlertAddGroup.dialogInformation.show();

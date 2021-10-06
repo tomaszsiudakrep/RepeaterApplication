@@ -1,11 +1,11 @@
-package com.quiz.quizapplication.scene.repeatScene;
+package com.quiz.quizapplication.repeat.commonRepeat.scene;
 
-import com.quiz.quizapplication.*;
-import com.quiz.quizapplication.controller.RepeatSceneController;
-import com.quiz.quizapplication.ConnectToDb;
-import com.quiz.quizapplication.exercises.data.DataFromDb;
-import com.quiz.quizapplication.database.SaveAndLoadBestResultTime;
-import com.quiz.quizapplication.scene.BackgroundScene;
+import com.quiz.quizapplication.data.music.Music;
+import com.quiz.quizapplication.data.timers.TimerCommon;
+import com.quiz.quizapplication.DataFromDb;
+import com.quiz.quizapplication.repeat.ChooseRepeatScene;
+import com.quiz.quizapplication.repeat.commonRepeat.controller.CommonRepeatController;
+import com.quiz.quizapplication.scene.background.BackgroundScene;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -17,24 +17,19 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import java.io.IOException;
-import java.sql.ResultSet;
+
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collections;
-import java.util.List;
 
 public class RepeatScene extends Application {
 
     private DataFromDb dataFromDb;
     private ChooseRepeatScene chooseRepeatScene;
-    private SaveAndLoadBestResultTime saveAndLoadBestResultTime;
-    private RepeatSceneController repeatSceneController;
     private final BackgroundScene backgroundScene = new BackgroundScene();
+    CommonRepeatController commonRepeatController = new CommonRepeatController();
     public static TimerCommon timerCommon = new TimerCommon();
 
-    public int id = 0;
-    public static int counter;
+    public static int id;
+    public static int getElementFromList = 0;
     public static VBox vBoxBottom;
     public static VBox vBoxTop;
     public static HBox bestResultHBox;
@@ -65,8 +60,6 @@ public class RepeatScene extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         dataFromDb = new DataFromDb();
-        repeatSceneController = new RepeatSceneController();
-        saveAndLoadBestResultTime = new SaveAndLoadBestResultTime();
         chooseRepeatScene = new ChooseRepeatScene();
 
         AnchorPane anchorPane = new AnchorPane();
@@ -140,7 +133,6 @@ public class RepeatScene extends Application {
             shuffleExercisesLabel.setWrapText(true);
             shuffleExercisesLabel.setStyle("-fx-alignment: center; -fx-font-size: 12");
             shuffleExercisesLabel.setText("shuffle");
-
         descriptionLabel = new Label("Description");
             descriptionLabel.setPrefHeight(20);
             descriptionLabel.setPrefWidth(400);
@@ -185,7 +177,6 @@ public class RepeatScene extends Application {
         startTimerImmediatelyBox = new HBox();
             startTimerImmediatelyBox.getChildren().add(0, startTimerImmediatelyRadioButton);
             startTimerImmediatelyBox.getChildren().add(1, startTimerImmediatelyLabel);
-
         shuffleExercisesBox = new HBox();
             shuffleExercisesBox.getChildren().add(0, shuffleExercisesButton);
             shuffleExercisesBox.getChildren().add(1, shuffleExercisesLabel);
@@ -213,72 +204,48 @@ public class RepeatScene extends Application {
         Scene sceneRepeat = new Scene(anchorPane, 853, 569, Color.BLACK);
         primaryStage.setScene(sceneRepeat);
 
-        shuffleExercisesButton.setOnAction(event ->
-        {
-            Collections.shuffle(ChooseRepeatScene.list);
-            shuffleExercisesButton.setDisable(true);
-        });
+        shuffleExercisesButton.setOnAction(event -> commonRepeatController.shuffleListToCommonRepeat());
 
-        saveTimeButton.setOnAction(event -> repeatSceneController.saveTime());
+        saveTimeButton.setOnAction(event -> {
+            try {
+                commonRepeatController.saveTime();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
 
         backButton.setOnAction(e -> {
             try {
                 chooseRepeatScene.start(primaryStage);
                 TimerCommon.reset();
+                commonRepeatController.initializeCounter();
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
         });
 
-        archiveExercisesButton.setOnAction(e -> {
-            try {
-                repeatSceneController.archiveExercise();
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
-        });
+//        archiveExercisesButton.setOnAction(e -> {
+//            try {
+//                repeatSceneController.archiveExercise();
+//            } catch (IOException exception) {
+//                exception.printStackTrace();
+//            }
+//        });
 
-        exampleSolutionButton.setOnAction(e -> repeatSceneController.exampleSolution());
+//        exampleSolutionButton.setOnAction(e -> repeatSceneController.exampleSolution());
 
         nextExercisesButton.setOnAction(event ->
         {
             try {
-                TimerCommon.reset();
-                shuffleExercisesButton.setDisable(true);
-                if (startTimerImmediatelyRadioButton.isSelected()) {
-                    TimerCommon.started = true;
-                    TimerCommon.startButton.setText("STOP");
-                    TimerCommon.startTimer();
-                }
-                    executeNextEx(descriptionAreaText, idTextField, titleTextField, ChooseRepeatScene.list);
-                    int timeToShow = saveAndLoadBestResultTime.loadTimeResult(idTextField.getText());
-                    String resultToShow = saveAndLoadBestResultTime.convertElapsedTimeToString(timeToShow);
-                    bestResultLabel.setText("BEST RESULT " + resultToShow);
+                commonRepeatController.nextExercises();
+//
+//                    int timeToShow = saveAndLoadBestResultTime.loadTimeResult(idTextField.getText());
+//                    String resultToShow = saveAndLoadBestResultTime.convertElapsedTimeToString(timeToShow);
+//                    bestResultLabel.setText("BEST RESULT " + resultToShow);
             } catch (SQLException e) {
                 System.out.println("ups wrong: " + e);
             }
         });
     }
 
-    private void executeNextEx(TextArea textAreaRepeatDesc, TextField textFieldIdRepeat, TextField textFieldTitleRepeat, List<Integer> list) throws SQLException {
-        if (list.size() > id) {
-            counter = list.get(id);
-            ConnectToDb connectToDb = ConnectToDb.getInstance();
-            Statement statement = connectToDb.getConn().createStatement();
-            String sqlQuery = "SELECT * FROM EXERCISES WHERE ID = " + counter + " and archived = 0";
-            ResultSet resultSet = statement.executeQuery(sqlQuery);
-
-            while (resultSet.next()) {
-                String varDesc = resultSet.getString("DESCRIPTION");
-                textAreaRepeatDesc.setText(varDesc);
-                int varId = resultSet.getInt("ID");
-                textFieldIdRepeat.setText("" + varId);
-                String varTitle = resultSet.getString("TITLE");
-                textFieldTitleRepeat.setText(varTitle);
-            }
-            resultSet.close();
-            statement.close();
-            id++;
-        }
-    }
 }

@@ -10,40 +10,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImportantInformationDataBase {
-
-    public String sqlQuerySelectAllFromInformation() {
-        return "SELECT * FROM IMPORTANT_INFORMATION WHERE ARCHIVED = 0 ORDER BY GROUP_ID";
-    }
-
-    public String sqlQuerySelectAllFromInformationWhereGroup(String groupName) {
-        return "SELECT * FROM IMPORTANT_INFORMATION WHERE ARCHIVED = 0 AND GROUP_ID = " +
-                "(SELECT ID FROM GROUP_IMPORTANT_INFORMATION WHERE NAME = '" + groupName + "')";
-    }
-
-    public String sqlQueryDeleteInformation(int informationId) {
-        return "DELETE FROM IMPORTANT_INFORMATION WHERE ID = " + informationId;
-    }
-
-    public String sqlQueryUpdateTitle(int informationId, String newTitle) {
-        return "UPDATE IMPORTANT_INFORMATION SET TITLE = '" + newTitle + "' WHERE ID = " + informationId;
-    }
-
-    public String sqlQueryReturnGroupIdByInformationId(int informationId) {
-        return "SELECT GROUP_ID FROM IMPORTANT_INFORMATION WHERE ID = " + informationId;
-    }
-
-    public String sqlQueryCheckIfNewTitleIsExistInGroup(int groupId, String newTitle) {
-        return "SELECT * FROM IMPORTANT_INFORMATION WHERE TITLE = '" + newTitle + "' AND GROUP_ID = " + groupId;
-    }
-
-    public String sqlQueryReturnGroupIdByNameOfGroup(String groupName) {
-        return "SELECT ID FROM GROUP_IMPORTANT_INFORMATION WHERE NAME = '" + groupName + "'";
-    }
-
-    public String sqlQueryUpdateGroup(int newGroupId, int informationId) {
-        return "UPDATE IMPORTANT_INFORMATION SET GROUP_ID = " + newGroupId + " WHERE ID = " + informationId;
-    }
+public class DataImportantInformation {
 
     public List<String> createList(String sqlQuery) throws SQLException {
         List<String> list = new ArrayList<>();
@@ -63,8 +30,9 @@ public class ImportantInformationDataBase {
         return FXCollections.observableList(list);
     }
 
-    public boolean deleteInformation(String sqlQuery) {
+    public boolean deleteInformation(int informationId) {
         boolean result = false;
+        String sqlQuery = "DELETE FROM IMPORTANT_INFORMATION WHERE ID = " + informationId;
         try {
             Statement statement = ConnectToDb.getInstance().getConn().createStatement();
                 statement.executeUpdate(sqlQuery);
@@ -92,8 +60,9 @@ public class ImportantInformationDataBase {
         return ImportantInformationScene.changeTitleTextField.getText();
     }
 
-    public int returnGroupIdFromTableInformation(String sqlQuery) {
+    public int returnGroupIdFromTableInformation(int informationId) {
         int groupId = 0;
+        String sqlQuery = "SELECT GROUP_ID FROM IMPORTANT_INFORMATION WHERE ID = " + informationId;
         try {
             Statement statement = ConnectToDb.getInstance().getConn().createStatement();
             ResultSet resultSet = statement.executeQuery(sqlQuery);
@@ -105,9 +74,10 @@ public class ImportantInformationDataBase {
         return groupId;
     }
 
-    public boolean checkIfNewTitleExist(String sqlQuery) {
+    public boolean checkIfNewTitleExist(int groupId, String newTitle) {
         boolean result = false;
         int counter = 0;
+        String sqlQuery = "SELECT * FROM IMPORTANT_INFORMATION WHERE TITLE = '" + newTitle + "' AND GROUP_ID = " + groupId;
         try {
             Statement statement = ConnectToDb.getInstance().getConn().createStatement();
             ResultSet resultSet = statement.executeQuery(sqlQuery);
@@ -123,8 +93,9 @@ public class ImportantInformationDataBase {
         return result;
     }
 
-    public boolean updateTitle(String sqlQuery) {
+    public boolean updateTitle(String newTitle, int informationId) {
         boolean result = false;
+        String sqlQuery = "UPDATE IMPORTANT_INFORMATION SET TITLE = '" + newTitle + "' WHERE ID = " + informationId;
         try {
             Statement statement = ConnectToDb.getInstance().getConn().createStatement();
                 statement.executeUpdate(sqlQuery);
@@ -140,8 +111,9 @@ public class ImportantInformationDataBase {
         return ImportantInformationScene.changeGroupChoiceBox.getValue();
     }
 
-    public boolean changeGroup(String sqlQuery) {
+    public boolean changeGroup(int newGroupId, int informationId) {
         boolean result = false;
+        String sqlQuery = "UPDATE IMPORTANT_INFORMATION SET GROUP_ID = " + newGroupId + " WHERE ID = " + informationId;
         try {
             Statement statement = ConnectToDb.getInstance().getConn().createStatement();
                 statement.executeUpdate(sqlQuery);
@@ -153,8 +125,9 @@ public class ImportantInformationDataBase {
         return result;
     }
 
-    public int returnGroupIdFromTableGroup(String sqlQuery) {
+    public int returnGroupIdFromTableGroup(String groupName) {
         int groupId = 0;
+        String sqlQuery = "SELECT ID FROM GROUP_IMPORTANT_INFORMATION WHERE NAME = '" + groupName + "'";
         try {
             Statement statement = ConnectToDb.getInstance().getConn().createStatement();
             ResultSet resultSet = statement.executeQuery(sqlQuery);
@@ -164,6 +137,10 @@ public class ImportantInformationDataBase {
             e.printStackTrace();
         }
         return groupId;
+    }
+
+    public long sizeOfListView() {
+        return ImportantInformationScene.listView.getItems().size();
     }
 
 

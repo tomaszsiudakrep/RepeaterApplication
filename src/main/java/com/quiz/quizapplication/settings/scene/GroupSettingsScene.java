@@ -1,6 +1,6 @@
 package com.quiz.quizapplication.settings.scene;
 
-import com.quiz.quizapplication.scene.BackgroundScene;
+import com.quiz.quizapplication.scene.background.BackgroundScene;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,7 +10,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class GroupSettings extends Application {
+public class GroupSettingsScene extends Application {
 
     BackgroundScene backgroundScene = new BackgroundScene();
 

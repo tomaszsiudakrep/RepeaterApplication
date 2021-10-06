@@ -4,8 +4,7 @@ import com.quiz.quizapplication.importantInformation.scene.add.AddInformationSce
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 
-public class AddInformationBindings {
-
+public class BindingsAddInformation {
 
     public StringBinding binding = Bindings.createStringBinding(() -> {
         int characterCount = 0;
@@ -18,7 +17,7 @@ public class AddInformationBindings {
         return "Description (" + characterCount + "/ 8000)";
     }, AddInformationScene.descriptionTextArea.textProperty());
 
-    public AddInformationBindings() {
+    public BindingsAddInformation() {
         AddInformationScene.descriptionLabel.textProperty().bind(binding);
     }
 }

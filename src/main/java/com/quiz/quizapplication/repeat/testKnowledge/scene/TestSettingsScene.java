@@ -1,13 +1,11 @@
-package com.quiz.quizapplication.scene.repeatScene;
+package com.quiz.quizapplication.repeat.testKnowledge.scene;
 
-import com.quiz.quizapplication.CountdownTimer;
-import com.quiz.quizapplication.controller.CountdownTimerController;
-import com.quiz.quizapplication.controller.GroupChoiceBoxController;
-import com.quiz.quizapplication.controller.TestRepeaterController;
+import com.quiz.quizapplication.data.timers.CountdownTimer;
+import com.quiz.quizapplication.exercises.controller.add.AddExercisesGroupController;
+import com.quiz.quizapplication.repeat.testKnowledge.controller.TestRepeaterController;
 import com.quiz.quizapplication.repeat.ChooseRepeatScene;
-import com.quiz.quizapplication.repeat.testKnowledge.data.TestSettings;
-import com.quiz.quizapplication.repeat.testKnowledge.scene.TestScene;
-import com.quiz.quizapplication.scene.BackgroundScene;
+import com.quiz.quizapplication.repeat.testKnowledge.data.DataTestSettings;
+import com.quiz.quizapplication.scene.background.BackgroundScene;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Application;
@@ -23,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,26 +29,25 @@ public class TestSettingsScene extends Application {
 
     BackgroundScene backgroundScene = new BackgroundScene();
     TestRepeaterController testRepeaterController = new TestRepeaterController();
-    TestSettings testSettings = new TestSettings();
-    GroupChoiceBoxController groupChoiceBoxController = new GroupChoiceBoxController();
-    CountdownTimerController countdownTimerController = new CountdownTimerController();
+    AddExercisesGroupController addExercisesGroupController = new AddExercisesGroupController();
+    DataTestSettings dataTestSettings = new DataTestSettings();
     TestScene testScene;
     ChooseRepeatScene chooseRepeatScene;
 
-    public static int counter = 1;
+    public static int countOfExercises = 1;
+    public static int time = 30;
     public static Label countOfExercisesToTestLabel;
     public static Button plusOneExButton;
     public static Button minusOneExButton;
     public static ChoiceBox<String> choiceBoxGroup;
-    public static int time = 30;
     public static Button plusOneMinButton;
     public static Button minusOneMinButton;
     public static Label countOfTimeToTestLabel;
     public static String groupName = null;
     public static List<Integer> listOfExercises = new ArrayList<>();
 
-    public TestSettingsScene() {
-        choiceBoxGroup = new ChoiceBox<>(groupChoiceBoxController.create());
+    public TestSettingsScene() throws SQLException {
+        choiceBoxGroup = new ChoiceBox<>(addExercisesGroupController.createObservableListToChoiceBox());
     }
 
     @Override
@@ -73,7 +71,6 @@ public class TestSettingsScene extends Application {
             vBoxBottom.setAlignment(Pos.BOTTOM_CENTER);
 
         HBox hBoxTest = new HBox();
-
         HBox hBoxTime = new HBox();
 
         Button backButton = new Button("Back");
@@ -92,7 +89,7 @@ public class TestSettingsScene extends Application {
             minusOneExButton.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.MINUS));
             minusOneExButton.setPrefHeight(30);
             minusOneExButton.setPrefWidth(50);
-        countOfExercisesToTestLabel = new Label(counter + "");
+        countOfExercisesToTestLabel = new Label(countOfExercises + "");
             countOfExercisesToTestLabel.setPrefHeight(30);
             countOfExercisesToTestLabel.setPrefWidth(50);
             countOfExercisesToTestLabel.setStyle("-fx-font-size: 20; -fx-text-fill: white; -fx-alignment: center");
@@ -148,9 +145,9 @@ public class TestSettingsScene extends Application {
         Scene testSettingsScene = new Scene(anchorPane, 853, 569, Color.BLACK);
         primaryStage.setScene(testSettingsScene);
 
-        plusOneExButton.setOnAction(event -> TestSettings.plusOne());
+        plusOneExButton.setOnAction(event -> DataTestSettings.plusOne());
 
-        minusOneExButton.setOnAction(event -> TestSettings.minusOne());
+        minusOneExButton.setOnAction(event -> DataTestSettings.minusOne());
 
         plusOneMinButton.setOnAction(event -> CountdownTimer.plusOneMinute());
 
@@ -166,7 +163,7 @@ public class TestSettingsScene extends Application {
 
         startTestButton.setOnAction(event -> {
             try {
-                groupName = choiceBoxGroup.getValue();
+                dataTestSettings.downloadGroupName();
                 if (groupName == null || testRepeaterController.checkIfGroupIsEmpty()) {
                     primaryStage.setScene(testSettingsScene);
                 } else {

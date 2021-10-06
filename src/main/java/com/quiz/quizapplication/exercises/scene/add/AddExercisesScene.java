@@ -1,16 +1,15 @@
-package com.quiz.quizapplication.scene.addScene;
+package com.quiz.quizapplication.exercises.scene.add;
 
-import com.quiz.quizapplication.controller.AddExercisesController;
-import com.quiz.quizapplication.controller.GroupChoiceBoxController;
-import com.quiz.quizapplication.scene.BackgroundScene;
+import com.quiz.quizapplication.exercises.controller.add.AddExercisesController;
+import com.quiz.quizapplication.exercises.controller.add.AddExercisesGroupController;
+import com.quiz.quizapplication.exercises.data.add.BindingsAddExercises;
+import com.quiz.quizapplication.scene.background.BackgroundScene;
+import com.quiz.quizapplication.scene.add.ChooseAddScene;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -24,26 +23,33 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
 public class AddExercisesScene extends Application {
 
     private final BackgroundScene backgroundScene = new BackgroundScene();
-    private AddExercisesController addExercisesController;
     private ChooseAddScene chooseAddScene;
     public static TextField titleTextField;
     public static TextArea descriptionTextArea;
     public static ChoiceBox<String> groupChoiceBox;
-    GroupChoiceBoxController groupChoiceBoxController = new GroupChoiceBoxController();
-    public AddGroupScene addGroupScene;
+    public static Label descriptionLabel;
+    public AddGroupExercisesScene addGroupExercisesScene;
+    AddExercisesController addExercisesController = new AddExercisesController();
+    AddExercisesGroupController addExercisesGroupController = new AddExercisesGroupController();
+    BindingsAddExercises bindingsAddExercises;
 
-    public AddExercisesScene() {
-        groupChoiceBox = new ChoiceBox<>(groupChoiceBoxController.create());
+    public AddExercisesScene() throws SQLException {
+        groupChoiceBox = new ChoiceBox<>(addExercisesGroupController.createObservableListToChoiceBox());
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        addGroupScene = new AddGroupScene();
+        addGroupExercisesScene = new AddGroupExercisesScene();
         chooseAddScene = new ChooseAddScene();
-        addExercisesController = new AddExercisesController();
+        descriptionLabel = new Label();
+        descriptionTextArea = new TextArea();
+        bindingsAddExercises = new BindingsAddExercises();
 
         AnchorPane anchorPane = new AnchorPane();
             anchorPane.setPadding(new Insets(5, 5, 5,5));
@@ -64,10 +70,9 @@ public class AddExercisesScene extends Application {
 
         Label titleLabel = new Label("Title");
             titleLabel.setPrefWidth(150);
-            titleLabel.setPrefHeight(30);
+            titleLabel.setPrefHeight(20);
             titleLabel.setStyle("-fx-background-color: #6857A5; -fx-font-size: 12; -fx-text-fill: white;-fx-underline: true");
-        Label descriptionLabel = new Label("Description");
-            descriptionLabel.setPrefWidth(400);
+        descriptionLabel.setPrefWidth(400);
             descriptionLabel.setPrefHeight(20);
             descriptionLabel.setStyle("-fx-background-color: #6857A5; -fx-font-size: 12; -fx-text-fill: white;-fx-underline: true");
         Label groupLabel = new Label("Group");
@@ -86,10 +91,17 @@ public class AddExercisesScene extends Application {
             hBox.setPrefHeight(30);
             hBox.getChildren().add(0, groupChoiceBox);
             hBox.getChildren().add(1, addGroupButton);
+        Label fileLabel = new Label("File");
+            fileLabel.setPrefWidth(150);
+            fileLabel.setPrefHeight(20);
+            fileLabel.setStyle("-fx-background-color: #6857A5; -fx-font-size: 12; -fx-text-fill: white;-fx-underline: false");
+        Button createFileButton = new Button("Create file");
+            createFileButton.setPrefWidth(150);
+            createFileButton.setPrefHeight(30);
+            createFileButton.setStyle("-fx-background-color: white; -fx-font-size: 12; -fx-text-fill: black;-fx-underline: false; -fx-border-width:1; -fx-border-color:#8981A7");
         titleTextField = new TextField();
             titleTextField.setPromptText("Write title of exercise");
-        descriptionTextArea = new TextArea();
-            descriptionTextArea.setPrefHeight(400);
+        descriptionTextArea.setPrefHeight(400);
             descriptionTextArea.setPrefWidth(400);
             descriptionTextArea.setWrapText(true);
             descriptionTextArea.setPromptText("Write description of exercise");
@@ -106,12 +118,14 @@ public class AddExercisesScene extends Application {
             loadFileButton.setPrefHeight(15);
             loadFileButton.setStyle("-fx-background-color: #6857A5; -fx-font-size: 12; -fx-text-fill: white;-fx-underline: true; -fx-border-width:1; -fx-border-color:#8981A7");
 
-        vBoxBottom.getChildren().add(0, backButton);
-        vBoxTop.getChildren().add(0, titleLabel);
-        vBoxTop.getChildren().add(1, titleTextField);
-        vBoxTop.getChildren().add(2, groupLabel);
-        vBoxTop.getChildren().add(3, hBox);
-        vBoxTop.getChildren().add(4, addExercisesButton);
+        vBoxBottom.getChildren().add(backButton);
+        vBoxTop.getChildren().add(titleLabel);
+        vBoxTop.getChildren().add(titleTextField);
+        vBoxTop.getChildren().add(groupLabel);
+        vBoxTop.getChildren().add(hBox);
+        vBoxTop.getChildren().add(fileLabel);
+        vBoxTop.getChildren().add(createFileButton);
+        vBoxTop.getChildren().add(addExercisesButton);
 
         GridPane gridPane = new GridPane();
             gridPane.setAlignment(Pos.CENTER_RIGHT);
@@ -122,18 +136,6 @@ public class AddExercisesScene extends Application {
             gridPane.add(loadFileButton, 0, 0);
             gridPane.add(descriptionLabel, 0, 1);
             gridPane.add(descriptionTextArea, 0 ,2);
-
-        StringBinding binding = Bindings.createStringBinding(() -> {
-           int characterCount = 0;
-           if (descriptionTextArea.getText() != null) {
-               characterCount = descriptionTextArea.getText().length();
-           }
-           if (characterCount >= 8000) {
-               descriptionTextArea.deleteNextChar();
-           }
-           return "Description (" + characterCount + "/ 8000)";
-        }, descriptionTextArea.textProperty());
-        descriptionLabel.textProperty().bind(binding);
 
         Scene addExercisesScene = new Scene(anchorPane, 853, 569, Color.BLACK);
         primaryStage.setScene(addExercisesScene);
@@ -147,13 +149,21 @@ public class AddExercisesScene extends Application {
             }
         });
 
-        addExercisesButton.setOnAction(event -> addExercisesController.addExercise());
+        addExercisesButton.setOnAction(event -> addExercisesController.addExercises());
 
         addGroupButton.setOnAction(event -> {
             try {
-                addGroupScene.start(primaryStage);
+                addGroupExercisesScene.start(primaryStage);
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        });
+
+        createFileButton.setOnAction(event -> {
+            try {
+                addExercisesController.createFile();
+            } catch (IOException exception) {
+                exception.printStackTrace();
             }
         });
     }

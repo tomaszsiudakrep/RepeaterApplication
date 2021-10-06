@@ -1,4 +1,4 @@
-package com.quiz.quizapplication.importantInformation.data.add;
+package com.quiz.quizapplication.data.alerts;
 
 import javafx.scene.control.Alert;
 

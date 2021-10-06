@@ -1,4 +1,4 @@
-package com.quiz.quizapplication.repeat;
+package com.quiz.quizapplication;
 
 import com.quiz.quizapplication.exercises.objects.Exercises;
 import com.quiz.quizapplication.data.file.LoadFileTxt;

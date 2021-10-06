@@ -1,4 +1,4 @@
-package com.quiz.quizapplication.scene;
+package com.quiz.quizapplication.scene.background;
 
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;

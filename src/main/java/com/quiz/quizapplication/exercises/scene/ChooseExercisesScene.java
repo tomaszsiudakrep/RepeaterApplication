@@ -16,7 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class ExercisesScene extends Application {
+public class ChooseExercisesScene extends Application {
 
     BackgroundScene backgroundScene = new BackgroundScene();
     LauncherApplication launcherApplication = new LauncherApplication();

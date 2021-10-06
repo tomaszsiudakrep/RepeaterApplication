@@ -1,8 +1,7 @@
 package com.quiz.quizapplication;
 
 import com.quiz.quizapplication.database.ConnectToDb;
-import com.quiz.quizapplication.database.DataFromDb;
-import com.quiz.quizapplication.database.GroupToDb;
+import com.quiz.quizapplication.exercises.objects.Exercises;
 import org.junit.jupiter.api.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,14 +11,14 @@ import java.util.List;
 public class TestSuiteDataFromDb {
 
     private DataFromDb dataFromDb;
-    private GroupToDb groupToDb;
+    private GroupExToDb groupExToDb;
     private Exercises exercises;
     private int counter = 0;
 
     @BeforeEach
      public void initializeObject() throws SQLException {
         dataFromDb = new DataFromDb();
-        groupToDb = new GroupToDb();
+        groupExToDb = new GroupExToDb();
         exercises = new Exercises("Test", "Test");
     }
 
@@ -43,8 +42,8 @@ public class TestSuiteDataFromDb {
         Statement statement = connectToDb.getConn().createStatement();
         String sqlQuery = "SELECT * FROM EXERCISES";
         String groupName = "loop";
-        groupToDb.addGroup(groupName);
-        int id = groupToDb.checkId(groupName);
+        groupExToDb.addGroup(groupName);
+        int id = groupExToDb.checkId(groupName);
         //When
         dataFromDb.saveExercisesToDb(exercises, id);
 
@@ -56,7 +55,6 @@ public class TestSuiteDataFromDb {
         }
         resultSet.close();
         Assertions.assertEquals(1, counter);
-
         //Clean up
     }
 
@@ -65,8 +63,8 @@ public class TestSuiteDataFromDb {
     void testArchiveExercises() throws SQLException{
         //Given
         String groupName = "loop";
-        groupToDb.addGroup(groupName);
-        int id = groupToDb.checkId(groupName);
+        groupExToDb.addGroup(groupName);
+        int id = groupExToDb.checkId(groupName);
         dataFromDb.saveExercisesToDb(exercises, id);
         ConnectToDb connectToDb = ConnectToDb.getInstance();
         Statement statement = connectToDb.getConn().createStatement();
@@ -99,8 +97,8 @@ public class TestSuiteDataFromDb {
         //Given
         int idEx = 0;
         String groupName = "loop";
-        groupToDb.addGroup(groupName);
-        int id = groupToDb.checkId(groupName);
+        groupExToDb.addGroup(groupName);
+        int id = groupExToDb.checkId(groupName);
         dataFromDb.saveExercisesToDb(exercises, id);
         String sql = "SELECT * FROM EXERCISES";
         ConnectToDb connectToDb = ConnectToDb.getInstance();
@@ -120,8 +118,8 @@ public class TestSuiteDataFromDb {
     void testCountAllExercises() throws SQLException {
         //Given
         String groupName = "loop";
-        groupToDb.addGroup(groupName);
-        int id = groupToDb.checkId(groupName);
+        groupExToDb.addGroup(groupName);
+        int id = groupExToDb.checkId(groupName);
         dataFromDb.saveExercisesToDb(exercises, id);
         dataFromDb.saveExercisesToDb(exercises, id);
         dataFromDb.saveExercisesToDb(exercises, id);
@@ -136,8 +134,8 @@ public class TestSuiteDataFromDb {
     void testListWithExercisesId() throws SQLException {
         //Given
         String groupName = "loop";
-        groupToDb.addGroup(groupName);
-        int group = groupToDb.checkId(groupName);
+        groupExToDb.addGroup(groupName);
+        int group = groupExToDb.checkId(groupName);
         dataFromDb.saveExercisesToDb(new Exercises("Test", "Test"), group);
         dataFromDb.saveExercisesToDb(new Exercises("Test", "Test"), group);
         dataFromDb.saveExercisesToDb(new Exercises("Test", "Test"), group);
@@ -153,8 +151,8 @@ public class TestSuiteDataFromDb {
     @Test
     void  testShuffleList() throws SQLException {
         //Given
-        groupToDb.addGroup("Test");
-        int idGroup = groupToDb.checkId("Test");
+        groupExToDb.addGroup("Test");
+        int idGroup = groupExToDb.checkId("Test");
         dataFromDb.saveExercisesToDb(new Exercises("Test", "Test"), idGroup);
         dataFromDb.saveExercisesToDb(new Exercises("Test", "Test"), idGroup);
         dataFromDb.saveExercisesToDb(new Exercises("Test", "Test"), idGroup);

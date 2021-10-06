@@ -1,4 +1,4 @@
-package com.quiz.quizapplication;
+package com.quiz.quizapplication.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,7 +10,7 @@ public enum ConnectToDb {
     INSTANCE;
 
     private Connection conn;
-
+    
     ConnectToDb() {
         Properties connectionProps = new Properties();
         connectionProps.put("user", "sa");

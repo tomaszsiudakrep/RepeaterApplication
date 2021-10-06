@@ -1,20 +1,20 @@
 package com.quiz.quizapplication;
 
-import com.quiz.quizapplication.data.LoadSolution;
+import com.quiz.quizapplication.data.file.LoadFileTxt;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
-public class TestSuiteLoadSolution {
+public class TestSuiteLoadFileTxt {
 
-    private LoadSolution loadSolution;
+    private LoadFileTxt loadFileTxt;
 
     @Test
     void testLoadTxtFile() throws IOException {
         //Given
-        loadSolution = new LoadSolution();
+        loadFileTxt = new LoadFileTxt();
         String id = "1";
         //When
-        loadSolution.loadExampleSolution(id);
+        loadFileTxt.loadExampleSolution(id);
         //Then
 
     }

@@ -1,12 +1,17 @@
-package com.quiz.quizapplication.importantInformation.scene.add;
+package com.quiz.quizapplication.importantInformation.scene.importantInformation;
 
-import com.quiz.quizapplication.RepeatExercisesApplication;
-import com.quiz.quizapplication.importantInformation.controller.add.AddGroupController;
+import com.quiz.quizapplication.LauncherApplication;
+import com.quiz.quizapplication.importantInformation.controller.add.AddInformationGroupController;
 import com.quiz.quizapplication.importantInformation.controller.information.ImportantInformationController;
-import com.quiz.quizapplication.scene.BackgroundScene;
+import com.quiz.quizapplication.scene.background.BackgroundScene;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -23,9 +28,9 @@ import java.sql.SQLException;
 public class ImportantInformationScene extends Application {
 
     BackgroundScene backgroundScene = new BackgroundScene();
-    AddGroupController addGroupController = new AddGroupController();
+    AddInformationGroupController addInformationGroupController = new AddInformationGroupController();
     ImportantInformationController importantInformationController = new ImportantInformationController();
-    RepeatExercisesApplication repeatExercisesApplication = new RepeatExercisesApplication();
+    LauncherApplication launcherApplication = new LauncherApplication();
     ImportantInformationScene importantInformationScene;
     public static ChoiceBox<String> groupChoiceBox;
     public static ChoiceBox<String> changeGroupChoiceBox;
@@ -34,8 +39,8 @@ public class ImportantInformationScene extends Application {
     public static TextField searchingTextField = new TextField();
 
     public ImportantInformationScene() throws SQLException {
-        groupChoiceBox = new ChoiceBox<>(addGroupController.createObservableListToChoiceBox());
-        changeGroupChoiceBox = new ChoiceBox<>(addGroupController.createObservableListToChoiceBox());
+        groupChoiceBox = new ChoiceBox<>(addInformationGroupController.createObservableListToChoiceBox());
+        changeGroupChoiceBox = new ChoiceBox<>(addInformationGroupController.createObservableListToChoiceBox());
         listView = new ListView<>(importantInformationController.createObservableListToListView());
     }
 
@@ -65,11 +70,11 @@ public class ImportantInformationScene extends Application {
         anchorPane.getChildren().add(vBoxTop);
 
         Label listViewInformationLabel = new Label();
-            listViewInformationLabel.setPrefWidth(300);
+            listViewInformationLabel.setPrefWidth(400);
             listViewInformationLabel.setPrefHeight(15);
-            listViewInformationLabel.setText("Important information");
+            listViewInformationLabel.setText("Important information (" + importantInformationController.sizeOfImportantInformation() + ")" );
             listViewInformationLabel.setStyle("-fx-background-color: #6857A5; -fx-font-size: 12; -fx-text-fill: white; -fx-alignment: center");
-        groupChoiceBox.setPrefWidth(270);
+        groupChoiceBox.setPrefWidth(370);
             groupChoiceBox.setPrefHeight(20);
             groupChoiceBox.setStyle("-fx-alignment: center-left");
         Button showInformationByGroupButton = new Button();
@@ -81,7 +86,7 @@ public class ImportantInformationScene extends Application {
             hBoxChoiceGroup.getChildren().add(groupChoiceBox);
             hBoxChoiceGroup.getChildren().add(showInformationByGroupButton);
         searchingTextField.setPrefHeight(20);
-            searchingTextField.setPrefWidth(270);
+            searchingTextField.setPrefWidth(370);
             searchingTextField.setPromptText("Search");
         Button searchingButton = new Button();
             searchingButton.setPrefHeight(20);
@@ -91,8 +96,8 @@ public class ImportantInformationScene extends Application {
             hBoxSearchingInformation.setAlignment(Pos.TOP_RIGHT);
             hBoxSearchingInformation.getChildren().add(searchingTextField);
             hBoxSearchingInformation.getChildren().add(searchingButton);
-        listView.setPrefWidth(270);
-            listView.setPrefHeight(300);
+        listView.setPrefWidth(370);
+            listView.setPrefHeight(200);
             listView.setStyle("-fx-alignment: center-left");
         Label deleteInformationLabel = new Label("Delete information");
             deleteInformationLabel.setPrefHeight(20);
@@ -108,8 +113,8 @@ public class ImportantInformationScene extends Application {
             changeTitleLabel.setStyle("-fx-background-color: #6857A5; -fx-font-size: 12; -fx-text-fill: white;-fx-underline: false;-fx-alignment: center");
         changeTitleTextField.setPrefHeight(20);
             changeTitleTextField.setPrefWidth(150);
-            changeTitleTextField.setStyle("-fx-font-size: 8");
-            changeTitleTextField.setPromptText("Choose information and write new title");
+            changeTitleTextField.setStyle("-fx-font-size: 12;-fx-background-color: white;-fx-text-fill: black");
+            changeTitleTextField.setPromptText("Write new title");
         Button changeTitleButton = new Button("Change title");
             changeTitleButton.setPrefWidth(150);
             changeTitleButton.setPrefHeight(20);
@@ -161,7 +166,7 @@ public class ImportantInformationScene extends Application {
 
         backToMenuButton.setOnAction(event -> {
             try {
-                repeatExercisesApplication.start(primaryStage);
+                launcherApplication.start(primaryStage);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -173,11 +178,24 @@ public class ImportantInformationScene extends Application {
                 importantInformationScene = new ImportantInformationScene();
                 importantInformationController.createListViewByGroup();
                 importantInformationScene.start(primaryStage);
-            } catch (SQLException e) {
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
+
+        deleteChosenInformation.setOnAction(event -> {
+            try {
+                importantInformationController.deleteImportantInformation();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+
+        changeTitleButton.setOnAction(event -> importantInformationController.changeTitleInformation());
+
+        changeGroupButton.setOnAction(event -> importantInformationController.changeGroup());
+
+
+
     }
 }

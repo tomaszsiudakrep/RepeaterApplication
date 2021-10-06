@@ -1,17 +1,17 @@
-package com.quiz.quizapplication;
+package com.quiz.quizapplication.exercises.objects;
 
 public class Exercises {
 
     private static int id;
-    private String titleTask;
-    private String descriptionTask;
-    private boolean archivedTask;
+    private String title;
+    private String description;
+    private boolean archived;
     private int bestResultTime;
 
-    public Exercises(String titleTask, String descriptionTask) {
-        this.titleTask = titleTask;
-        this.descriptionTask = descriptionTask;
-        archivedTask = false;
+    public Exercises(String title, String description) {
+        this.title = title;
+        this.description = description;
+        archived = false;
         bestResultTime = 0;
     }
 
@@ -19,16 +19,16 @@ public class Exercises {
         return id;
     }
 
-    public String getTitleTask() {
-        return titleTask;
+    public String getTitle() {
+        return title;
     }
 
-    public String getDescriptionTask() {
-        return descriptionTask;
+    public String getDescription() {
+        return description;
     }
 
-    public boolean isArchivedTask() {
-        return archivedTask;
+    public boolean isArchived() {
+        return archived;
     }
 
     public int getBestResultTime() {
@@ -38,9 +38,9 @@ public class Exercises {
     @Override
     public String toString() {
         return "Exercises{" +
-                "titleTask='" + titleTask + '\'' +
-                ", descriptionTask='" + descriptionTask + '\'' +
-                ", archivedTask=" + archivedTask +
+                "titleTask='" + title + '\'' +
+                ", descriptionTask='" + description + '\'' +
+                ", archivedTask=" + archived +
                 ", groupId=" + '}';
     }
 }

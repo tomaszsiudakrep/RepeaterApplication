@@ -1,13 +1,16 @@
 package com.quiz.quizapplication;
 
 import com.quiz.quizapplication.controller.Exit;
+import com.quiz.quizapplication.data.music.Music;
+import com.quiz.quizapplication.data.file.PdfCreator;
 import com.quiz.quizapplication.importantInformation.scene.importantInformation.ImportantInformationScene;
-import com.quiz.quizapplication.scene.*;
-import com.quiz.quizapplication.scene.addScene.AddExercisesScene;
-import com.quiz.quizapplication.scene.addScene.ChooseAddScene;
-import com.quiz.quizapplication.scene.exercisesScene.ExercisesScene;
-import com.quiz.quizapplication.scene.repeatScene.ChooseRepeatScene;
+import com.quiz.quizapplication.exercises.scene.add.AddExercisesScene;
+import com.quiz.quizapplication.exercises.scene.ChooseExercisesScene;
+import com.quiz.quizapplication.repeat.ChooseRepeatScene;
+import com.quiz.quizapplication.scene.add.ChooseAddScene;
+import com.quiz.quizapplication.scene.background.BackgroundScene;
 import com.quiz.quizapplication.settings.scene.MainSettingsScene;
+import com.quiz.quizapplication.tasks.scene.MainTasksScene;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Application;
@@ -21,7 +24,11 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class RepeatExercisesApplication extends Application {
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+public class LauncherApplication extends Application {
 
     Exit exit = new Exit();
     BackgroundScene backgroundScene = new BackgroundScene();
@@ -33,7 +40,8 @@ public class RepeatExercisesApplication extends Application {
     private ChooseRepeatScene chooseRepeatScene;
     private ChooseAddScene chooseAddScene;
     private ImportantInformationScene importantInformationScene;
-    public static ExercisesScene exercisesScene;
+    private MainTasksScene mainTasksScene;
+    public static ChooseExercisesScene chooseExercisesScene;
     public static Music music = new Music();
 
     PdfCreator pdfCreator = new PdfCreator();
@@ -48,8 +56,9 @@ public class RepeatExercisesApplication extends Application {
         mainSettingsScene = new MainSettingsScene();
         addExercisesScene = new AddExercisesScene();
         chooseAddScene = new ChooseAddScene();
-        exercisesScene = new ExercisesScene();
+        chooseExercisesScene = new ChooseExercisesScene();
         importantInformationScene = new ImportantInformationScene();
+        mainTasksScene = new MainTasksScene();
 
         AnchorPane anchorPane = new AnchorPane();
             anchorPane.setPadding(new Insets(5, 5, 5, 5));
@@ -144,7 +153,7 @@ public class RepeatExercisesApplication extends Application {
 
         exercisesButton.setOnAction(event -> {
             try {
-                exercisesScene.start(primaryStage);
+                chooseExercisesScene.start(primaryStage);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -182,6 +191,14 @@ public class RepeatExercisesApplication extends Application {
         importantInformationButton.setOnAction(event -> {
             try {
                 importantInformationScene.start(primaryStage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        tasksButton.setOnAction(event -> {
+            try {
+                mainTasksScene.start(primaryStage);
             } catch (Exception e) {
                 e.printStackTrace();
             }

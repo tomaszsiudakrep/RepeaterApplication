@@ -1,12 +1,11 @@
-package com.quiz.quizapplication.settings.controller;
+package com.quiz.quizapplication.settings.data;
 
-import com.quiz.quizapplication.Exercises;
-import com.quiz.quizapplication.database.DataFromDb;
-import com.quiz.quizapplication.database.GroupExToDb;
-
+import com.quiz.quizapplication.exercises.objects.Exercises;
+import com.quiz.quizapplication.DataFromDb;
+import com.quiz.quizapplication.GroupExToDb;
 import java.sql.SQLException;
 
-public class DataBaseSettingsController {
+public class DataDataBaseSettings {
 
     GroupExToDb groupExToDb = new GroupExToDb();
     DataFromDb dataFromDb = new DataFromDb();
@@ -53,10 +52,7 @@ public class DataBaseSettingsController {
     }
 
     public void createExercises() throws SQLException {
-        int id = groupExToDb.checkId("Loop");
-        int id2 = groupExToDb.checkId("Tab");
         int id3 = groupExToDb.checkId("Code");
-
         dataFromDb.saveExercisesToDb(exercises, id3);
         dataFromDb.saveExercisesToDb(exercises2, id3);
         dataFromDb.saveExercisesToDb(exercises3, id3);
@@ -64,9 +60,4 @@ public class DataBaseSettingsController {
         dataFromDb.saveExercisesToDb(exercises5, id3);
     }
 
-    public void create() throws SQLException {
-        DataFromDb.deleteAllGroupAndTasks();
-        createGroup();
-        createExercises();
-    }
 }

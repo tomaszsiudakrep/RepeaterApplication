@@ -1,7 +1,6 @@
-package com.quiz.quizapplication.exercises.controller;
+package com.quiz.quizapplication.exercises.controller.add;
 
 import com.quiz.quizapplication.exercises.data.add.DataAddExercisesGroup;
-import com.quiz.quizapplication.exercises.data.sqlQuery.SqlQueryAddExercisesGroup;
 import com.quiz.quizapplication.exercises.objects.GroupExercises;
 import com.quiz.quizapplication.exercises.scene.add.AddGroupExercisesScene;
 import com.quiz.quizapplication.data.alerts.AlertAddGroup;
@@ -15,15 +14,12 @@ public class AddExercisesGroupController {
     GroupExercises groupExercises;
     DataAddExercisesGroup dataAddExercisesGroup = new DataAddExercisesGroup();
     AlertAddGroup alertAddGroup = new AlertAddGroup();
-    SqlQueryAddExercisesGroup sqlQueryAddExercisesGroup = new SqlQueryAddExercisesGroup();
 
     public void addGroupExercises() throws SQLException {
         String groupName = dataAddExercisesGroup.downloadGroupNameToAdd().toUpperCase();
-        String sqlQuery = sqlQueryAddExercisesGroup.sqlQuerySelectAllFromGroupWhereName(groupName);
-        groupExercises =  sqlQueryAddExercisesGroup.createGroupExercisesObject(groupName);
-        if (dataAddExercisesGroup.checkIfGroupNameIsNotNull(groupName) && dataAddExercisesGroup.checkIfGroupNameNotExist(sqlQuery)) {
-            String sqlQueryAddGroup = sqlQueryAddExercisesGroup.sqlQueryAddGroup();
-            boolean result = dataAddExercisesGroup.addGroup(sqlQueryAddGroup);
+        groupExercises =  dataAddExercisesGroup.createGroupExercisesObject(groupName);
+        if (dataAddExercisesGroup.checkIfGroupNameIsNotNull(groupName) && dataAddExercisesGroup.checkIfGroupNameNotExist(groupName)) {
+            boolean result = dataAddExercisesGroup.addGroup(groupExercises);
             if (result) alertAddGroup.groupHasBeenAdded();
             else alertAddGroup.groupWasNotAdded();
         } else {
@@ -36,11 +32,9 @@ public class AddExercisesGroupController {
     public void changeGroupName() throws SQLException {
         String groupName = dataAddExercisesGroup.downloadGroupNameFromChoiceBox();
         String newGroupName = dataAddExercisesGroup.downloadNewGroupNameToChangeTitle().toUpperCase();
-        String sqlQuery = sqlQueryAddExercisesGroup.sqlQuerySelectAllFromGroupWhereName(newGroupName);
-        boolean groupNotExist = dataAddExercisesGroup.checkIfGroupNameNotExist(sqlQuery);
+        boolean groupNotExist = dataAddExercisesGroup.checkIfGroupNameNotExist(newGroupName);
         if (groupNotExist && !newGroupName.equals("") && groupName != null) {
-            String sqlQueryUpdate = sqlQueryAddExercisesGroup.sqlQueryUpdateGroupName(newGroupName, groupName);
-            boolean result = dataAddExercisesGroup.changeGroupName(sqlQueryUpdate);
+            boolean result = dataAddExercisesGroup.changeGroupName(newGroupName, groupName);
             if (result) alertAddGroup.groupNameHasBeenChanged();
             else alertAddGroup.groupNameWasNotChanged();
         }
@@ -53,11 +47,10 @@ public class AddExercisesGroupController {
 
     public void deleteGroup() throws SQLException {
         String groupName = dataAddExercisesGroup.downloadGroupNameFromChoiceBox();
-        String sqlQuery = sqlQueryAddExercisesGroup.sqlQueryDeleteGroup(groupName);
         if (groupName != null) {
             AlertAddGroup.dialogConfirmation.showAndWait();
             if (AlertAddGroup.dialogConfirmation.getResult() == ButtonType.OK) {
-                boolean result = dataAddExercisesGroup.deleteGroup(sqlQuery);
+                boolean result = dataAddExercisesGroup.deleteGroup(groupName);
                 if (result) alertAddGroup.groupHasBeenDeleted();
                 else alertAddGroup.groupWasNotDeleted();
                 AlertAddGroup.dialogInformation.show();
@@ -66,7 +59,7 @@ public class AddExercisesGroupController {
     }
 
     public ObservableList<String> createObservableListToChoiceBox() throws SQLException {
-        String sqlQuery = sqlQueryAddExercisesGroup.sqlQuerySelectAllFromGroup();
+        String sqlQuery = "SELECT * FROM GROUP_EXERCISES WHERE ARCHIVED = 0";
         return FXCollections.observableList(dataAddExercisesGroup.createGroupList(sqlQuery));
     }
 }

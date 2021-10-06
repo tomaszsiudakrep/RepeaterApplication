@@ -1,14 +1,12 @@
-package com.quiz.quizapplication.scene.exercisesScene;
+package com.quiz.quizapplication.exercises.scene.ownExercises;
 
-import com.quiz.quizapplication.controller.ExercisesController;
-import com.quiz.quizapplication.controller.GroupChoiceBoxController;
-import com.quiz.quizapplication.controller.ListViewExercisesController;
-import com.quiz.quizapplication.database.ListOfExercisesListView;
-import com.quiz.quizapplication.scene.BackgroundScene;
+import com.quiz.quizapplication.exercises.controller.add.AddExercisesGroupController;
+import com.quiz.quizapplication.exercises.controller.exercises.ExercisesController;
+import com.quiz.quizapplication.exercises.scene.ChooseExercisesScene;
+import com.quiz.quizapplication.scene.background.BackgroundScene;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -24,19 +22,18 @@ import java.sql.SQLException;
 public class OwnExercisesScene extends Application {
 
     BackgroundScene backgroundScene = new BackgroundScene();
-    GroupChoiceBoxController groupChoiceBoxController = new GroupChoiceBoxController();
-    ListOfExercisesListView listOfExercisesListView = new ListOfExercisesListView();
-    ListViewExercisesController listViewExercisesController = new ListViewExercisesController();
     ExercisesController exercisesController = new ExercisesController();
+    AddExercisesGroupController addExercisesGroupController = new AddExercisesGroupController();
+    OwnExercisesScene ownExercisesScene;
     public static ChoiceBox<String> groupChoiceBox;
     public static ChoiceBox<String> changeGroupChoiceBox;
     public static ListView<String> listView;
     public static TextField changeTitleTextField = new TextField();
 
     public OwnExercisesScene() throws SQLException {
-        groupChoiceBox = new ChoiceBox<>(groupChoiceBoxController.create());
-        changeGroupChoiceBox = new ChoiceBox<>(groupChoiceBoxController.create());
-        listView = new ListView<>(listOfExercisesListView.createList());
+        groupChoiceBox = new ChoiceBox<>(addExercisesGroupController.createObservableListToChoiceBox());
+        changeGroupChoiceBox = new ChoiceBox<>(addExercisesGroupController.createObservableListToChoiceBox());
+        listView = new ListView<>(exercisesController.createObservableListToListView());
     }
 
     @Override
@@ -51,13 +48,13 @@ public class OwnExercisesScene extends Application {
             gridPane.setAlignment(Pos.TOP_RIGHT);
 
         anchorPane.getChildren().add(gridPane);
-        anchorPane.getChildren().add(ExercisesScene.vBoxBottom);
-        anchorPane.getChildren().add(ExercisesScene.vBoxTop);
+        anchorPane.getChildren().add(ChooseExercisesScene.vBoxBottom);
+        anchorPane.getChildren().add(ChooseExercisesScene.vBoxTop);
 
         Label listViewLabel = new Label();
             listViewLabel.setPrefWidth(300);
             listViewLabel.setPrefHeight(15);
-            listViewLabel.setText("List of exercises (" + listViewExercisesController.countSizeOfListView() + ")");
+            listViewLabel.setText("List of exercises (" + exercisesController.sizeOfListView() + ")");
             listViewLabel.setStyle("-fx-background-color: #6857A5; -fx-font-size: 12; -fx-text-fill: white");
         groupChoiceBox.setPrefWidth(270);
             groupChoiceBox.setPrefHeight(20);
@@ -73,19 +70,19 @@ public class OwnExercisesScene extends Application {
         listView.setPrefWidth(270);
             listView.setPrefHeight(300);
             listView.setStyle("-fx-alignment: center-left");
-        Label archiveLabel = new Label("Archive");
+        Label archiveLabel = new Label("Delete");
             archiveLabel.setPrefHeight(15);
             archiveLabel.setPrefWidth(300);
             archiveLabel.setStyle("-fx-background-color: #6857A5; -fx-font-size: 12; -fx-text-fill: white");
-        Button archiveExercisesButton = new Button("Archive chosen exercise");
-            archiveExercisesButton.setPrefHeight(20);
-            archiveExercisesButton.setPrefWidth(200);
-        Button archiveAllExercisesButton = new Button("Archive all");
-            archiveAllExercisesButton.setPrefHeight(20);
-            archiveAllExercisesButton.setPrefWidth(100);
+        Button deleteChosenExercisesButton = new Button("Delete chosen exercise");
+            deleteChosenExercisesButton.setPrefHeight(20);
+            deleteChosenExercisesButton.setPrefWidth(200);
+        Button deleteAllExercisesButton = new Button("Delete all");
+            deleteAllExercisesButton.setPrefHeight(20);
+            deleteAllExercisesButton.setPrefWidth(100);
         HBox hBoxArchive = new HBox();
-            hBoxArchive.getChildren().add(archiveExercisesButton);
-            hBoxArchive.getChildren().add(archiveAllExercisesButton);
+            hBoxArchive.getChildren().add(deleteChosenExercisesButton);
+            hBoxArchive.getChildren().add(deleteAllExercisesButton);
         Label changeTitleLabel = new Label("Change title");
             changeTitleLabel.setPrefHeight(15);
             changeTitleLabel.setPrefWidth(300);
@@ -134,23 +131,66 @@ public class OwnExercisesScene extends Application {
         Scene mainScene = new Scene(anchorPane, 853, 569, Color.BLACK);
         primaryStage.setScene(mainScene);
 
-        archiveAllExercisesButton.setOnAction(event -> exercisesController.archiveAllExercises());
-
-        archiveExercisesButton.setOnAction(event -> exercisesController.archiveChosenExercise());
-
-        changeTitleButton.setOnAction(event -> exercisesController.changeTitleOfExercise());
-
-        exampleSolutionButton.setOnAction(event -> exercisesController.loadExampleSolution());
-
-        showExercisesByGroupButton.setOnAction(event -> {
+        deleteAllExercisesButton.setOnAction(event -> {
             try {
-                exercisesController.createListByGroup();
-            } catch (SQLException e) {
+                exercisesController.deleteAllExercises();
+                ownExercisesScene = new OwnExercisesScene();
+                ownExercisesScene.start(primaryStage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
+
+        deleteChosenExercisesButton.setOnAction(event -> {
+            try {
+                exercisesController.deleteChosenExercises();
+                exercisesController.downloadGroupFromChoiceBox();
+                ownExercisesScene = new OwnExercisesScene();
+                exercisesController.createListViewByGroup();
+                ownExercisesScene.start(primaryStage);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
 
-        changeGroupButton.setOnAction(event -> exercisesController.changeGroup());
+        changeTitleButton.setOnAction(event -> {
+            try {
+                exercisesController.changeTitleExercises();
+                exercisesController.downloadGroupFromChoiceBox();
+                ownExercisesScene = new OwnExercisesScene();
+                exercisesController.createListViewByGroup();
+                ownExercisesScene.start(primaryStage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
+
+//        exampleSolutionButton.setOnAction(event -> exercisesControllerOld.loadExampleSolution());
+
+        showExercisesByGroupButton.setOnAction(event -> {
+            try {
+                exercisesController.downloadGroupFromChoiceBox();
+                ownExercisesScene = new OwnExercisesScene();
+                exercisesController.createListViewByGroup();
+                ownExercisesScene.start(primaryStage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        changeGroupButton.setOnAction(event -> {
+            try {
+                exercisesController.changeGroupExercises();
+                exercisesController.downloadGroupFromChoiceBox();
+                ownExercisesScene = new OwnExercisesScene();
+                exercisesController.createListViewByGroup();
+                ownExercisesScene.start(primaryStage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 

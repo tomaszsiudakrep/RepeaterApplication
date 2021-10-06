@@ -1,4 +1,4 @@
-package com.quiz.quizapplication.tasks.data;
+package com.quiz.quizapplication.tasks.data.add;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

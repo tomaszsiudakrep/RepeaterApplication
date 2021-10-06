@@ -1,52 +1,83 @@
 package com.quiz.quizapplication.importantInformation;
 
-import com.quiz.quizapplication.importantInformation.data.importantInformation.ImportantInformationDataBase;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.quiz.quizapplication.database.ConnectToDb;
+import com.quiz.quizapplication.importantInformation.data.add.DataAddImportantInformation;
+import com.quiz.quizapplication.importantInformation.data.add.DataAddInformationGroup;
+import com.quiz.quizapplication.importantInformation.data.importantInformation.DataImportantInformation;
+import com.quiz.quizapplication.importantInformation.objects.GroupInformation;
+import com.quiz.quizapplication.importantInformation.objects.ImportantInformation;
+import org.junit.jupiter.api.*;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TestSuiteImportantInformationDataBase {
+public class TestSuiteDataImportantInformation {
 
-    private ImportantInformationDataBase importantInformationDataBase;
-
-    private String sqlCountOfImportantInfo = "SELECT * FROM IMPORTANT_INFORMATION";
-    private int counter = 0;
+    DataAddInformationGroup dataAddInformationGroup;
+    DataAddImportantInformation dataAddImportantInformation;
+    static int groupId;
+    static int counter;
+    static int informationId;
 
     @BeforeEach
-    public void initialize() throws SQLException {
-        importantInformationDataBase = new ImportantInformationDataBase();
+    public void initialize() {
+        dataAddInformationGroup = new DataAddInformationGroup();
+        dataAddImportantInformation = new DataAddImportantInformation();
     }
 
-//    @AfterEach
-//    @BeforeEach
-//    public void cleanAll() throws SQLException {
-//        String delSql = "DELETE FROM IMPORTANT_INFORMATION";
-//        Statement statement = ConnectToDb.getInstance().getConn().createStatement();
-//        statement.executeUpdate(delSql);
-//        statement.close();
-//    }
+    @BeforeAll
+    @AfterAll
+    static void clean() throws SQLException {
+        String sqlQuery = "DELETE FROM IMPORTANT_INFORMATION; DELETE FROM GROUP_IMPORTANT_INFORMATION";
+        Statement statement = ConnectToDb.getInstance().getConn().createStatement();
+        statement.executeUpdate(sqlQuery);
+        statement.close();
+    }
+
+    public void addGroup() {
+        GroupInformation groupInformation = new GroupInformation("Math");
+        dataAddInformationGroup.addGroup(groupInformation);
+        groupId = dataAddInformationGroup.checkGroupId("Math");
+    }
+
+    public void addInformation() {
+        ImportantInformation importantInformation = new ImportantInformation("Test", "Test");
+            dataAddImportantInformation.addImportantInformation(groupId, importantInformation);
+//            informationId =
+    }
+
+    public void size() throws SQLException {
+        String sqlQuery = "SELECT * FROM IMPORTANT_INFORMATION";
+        Statement statement = ConnectToDb.getInstance().getConn().createStatement();
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        while (resultSet.next()) {
+            counter++;
+        }
+        resultSet.close();
+        statement.close();
+    }
 
     @Test
-    void test_returnIdInformationFromListViewItem() {
+    void test_deleteInformation() {
         //Given
-        String listViewItem = "26/Test4";
+//        addGroup(); addInformation();
         //When
-        int result = importantInformationDataBase.returnIdInformationFromListViewItem(listViewItem);
+
         //Then
-        Assertions.assertEquals(26, result);
+
     }
 
     @Test
     void test_returnTitleInformationFromListViewItem() {
         //Given
-        String listViewItem = "26/Test4";
-        //When
-        String result = importantInformationDataBase.returnTitleInformationFromListViewItem(listViewItem);
-        //Then
-        Assertions.assertEquals("Test4", result);
-    }
 
+        //When
+
+        //Then
+
+    }
 
 }

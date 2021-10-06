@@ -1,9 +1,8 @@
-package com.quiz.quizapplication.scene.settingsScene;
+package com.quiz.quizapplication.settings.scene;
 
-import com.quiz.quizapplication.SaveAndLoadSettings;
-import com.quiz.quizapplication.RepeatExercisesApplication;
-import com.quiz.quizapplication.scene.BackgroundScene;
-import com.quiz.quizapplication.scene.addScene.AddGroupScene;
+import com.quiz.quizapplication.settings.controller.MainSettingsController;
+import com.quiz.quizapplication.LauncherApplication;
+import com.quiz.quizapplication.scene.background.BackgroundScene;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,15 +17,17 @@ import javafx.stage.Stage;
 
 public class MainSettingsScene extends Application {
 
-    public RepeatExercisesApplication repeatExercisesApplication = new RepeatExercisesApplication();
-    private final SaveAndLoadSettings saveAndLoadSettings = new SaveAndLoadSettings();
+    LauncherApplication launcherApplication = new LauncherApplication();
+    MainSettingsController mainSettingsController = new MainSettingsController();
     private final BackgroundScene backgroundScene = new BackgroundScene();
     private DataBaseSettingsScene dataBaseSettingsScene;
-    private GroupSettings groupSettings;
-    private ExercisesSettings exercisesSettings;
+    private GroupSettingsScene groupSettingsScene;
+    private ExercisesSettingsScene exercisesSettingsScene;
+    private MailSettingsScene mailSettingsScene;
     public static Button backToMenuButton;
     public static Button groupSettingsButton;
     public static Button exercisesSettingsButton;
+    public static Button mailSettingsButton;
     public static Button importantInformationSettingsButton;
     public static Button dataBaseSettingsButton;
     public static Button helpButton;
@@ -34,13 +35,13 @@ public class MainSettingsScene extends Application {
     public static VBox vBoxBottom;
     public static VBox vBoxTop;
     public static Label settingsNameLabel;
-    public static AlertBox alertBox;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         dataBaseSettingsScene = new DataBaseSettingsScene();
-        groupSettings = new GroupSettings();
-        exercisesSettings = new ExercisesSettings();
+        groupSettingsScene = new GroupSettingsScene();
+        exercisesSettingsScene = new ExercisesSettingsScene();
+        mailSettingsScene = new MailSettingsScene();
 
         AnchorPane anchorPane = new AnchorPane();
             anchorPane.setPadding(new Insets(5, 5, 5, 5));
@@ -78,6 +79,10 @@ public class MainSettingsScene extends Application {
             musicButton.setPrefWidth(150);
             musicButton.setPrefHeight(25);
             musicButton.setStyle("-fx-background-color: #6857A5; -fx-font-size: 12; -fx-text-fill: white;-fx-underline: true; -fx-border-width:1; -fx-border-color:#8981a7");
+        mailSettingsButton = new Button("Mail");
+            mailSettingsButton.setPrefWidth(150);
+            mailSettingsButton.setPrefHeight(25);
+            mailSettingsButton.setStyle("-fx-background-color: #6857A5; -fx-font-size: 12; -fx-text-fill: white;-fx-underline: true; -fx-border-width:1; -fx-border-color:#8981A7");
         vBoxBottom = new VBox();
             vBoxBottom.setAlignment(Pos.BOTTOM_CENTER);
             vBoxBottom.setPrefHeight(569);
@@ -106,14 +111,14 @@ public class MainSettingsScene extends Application {
         vBoxTop.getChildren().add(4, dataBaseSettingsButton);
         vBoxTop.getChildren().add(5, helpButton);
         vBoxTop.getChildren().add(6, musicButton);
+        vBoxTop.getChildren().add(7, mailSettingsButton);
 
         Scene settingsScene = new Scene(anchorPane, 853, 569, Color.BLACK);
-
         primaryStage.setScene(settingsScene);
 
         groupSettingsButton.setOnAction(e -> {
             try {
-                groupSettings.start(primaryStage);
+                groupSettingsScene.start(primaryStage);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
@@ -121,7 +126,7 @@ public class MainSettingsScene extends Application {
 
         exercisesSettingsButton.setOnAction(event -> {
             try {
-                exercisesSettings.start(primaryStage);
+                exercisesSettingsScene.start(primaryStage);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -135,10 +140,18 @@ public class MainSettingsScene extends Application {
             }
         });
 
+        mailSettingsButton.setOnAction(event -> {
+            try {
+                mailSettingsScene.start(primaryStage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
         backToMenuButton.setOnAction(e -> {
             try {
-                saveAndLoadSettings.saveSettings();
-                repeatExercisesApplication.start(primaryStage);
+                mainSettingsController.saveSettingsToFile();
+                launcherApplication.start(primaryStage);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }

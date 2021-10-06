@@ -2,13 +2,13 @@ package com.quiz.quizapplication.data.alerts;
 
 import javafx.scene.control.Alert;
 
-public class AlertImportantInformation {
+public class AlertObject {
 
     public static Alert dialogInformation = new Alert(Alert.AlertType.INFORMATION);
     public static Alert dialogConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
     public static Alert dialogConfirmationAll = new Alert(Alert.AlertType.CONFIRMATION);
 
-    public AlertImportantInformation() {
+    public AlertObject() {
         dialogInformation.setTitle("Information");
         dialogConfirmation.setTitle("Warning");
         dialogConfirmation.setHeaderText("Are you sure you want to delete this object?");

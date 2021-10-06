@@ -1,18 +1,23 @@
 package com.quiz.quizapplication;
 
 import com.quiz.quizapplication.database.ConnectToDb;
-import com.quiz.quizapplication.database.SettingsDb;
 import org.junit.jupiter.api.*;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class TestSuiteSettingsDb {
 
-    public SettingsDb settingsDb;
+    public int convertToBit(boolean result) {
+        int n = 0;
+        if (result) {
+            n = 1;
+        }
+        return n;
+    }
 
     @BeforeEach
     public void initialize() {
-        settingsDb = new SettingsDb();
+
     }
 
     @BeforeEach
@@ -31,8 +36,8 @@ public class TestSuiteSettingsDb {
         boolean resultTrue = true;
         boolean resultFalse = false;
         //When
-        int expTrue = settingsDb.convertToBit(resultTrue);
-        int expFalse = settingsDb.convertToBit(resultFalse);
+        int expTrue = convertToBit(resultTrue);
+        int expFalse = convertToBit(resultFalse);
         //Then
         Assertions.assertEquals(1, expTrue);
         Assertions.assertEquals(0, expFalse);

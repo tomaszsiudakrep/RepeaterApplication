@@ -1,10 +1,11 @@
-package com.quiz.quizapplication.scene;
+package com.quiz.quizapplication.scene.add;
 
 import com.quiz.quizapplication.LauncherApplication;
+import com.quiz.quizapplication.scene.background.BackgroundScene;
 import com.quiz.quizapplication.importantInformation.scene.add.AddGroupInformationScene;
 import com.quiz.quizapplication.importantInformation.scene.add.AddInformationScene;
 import com.quiz.quizapplication.exercises.scene.add.AddExercisesScene;
-import com.quiz.quizapplication.exercises.scene.add.AddGroupScene;
+import com.quiz.quizapplication.exercises.scene.add.AddGroupExercisesScene;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Application;
@@ -24,13 +25,13 @@ public class ChooseAddScene extends Application {
     private final LauncherApplication launcherApplication = new LauncherApplication();
     private AddGroupInformationScene addGroupInformationScene;
     private AddExercisesScene addExercisesScene;
-    private AddGroupScene addGroupScene;
+    private AddGroupExercisesScene addGroupExercisesScene;
     private AddInformationScene addInformationScene;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         addExercisesScene = new AddExercisesScene();
-        addGroupScene = new AddGroupScene();
+        addGroupExercisesScene = new AddGroupExercisesScene();
         addGroupInformationScene = new AddGroupInformationScene();
         addInformationScene = new AddInformationScene();
 
@@ -129,7 +130,7 @@ public class ChooseAddScene extends Application {
 
         addGroup.setOnAction(event -> {
             try {
-                addGroupScene.start(primaryStage);
+                addGroupExercisesScene.start(primaryStage);
             } catch (Exception e) {
                 e.printStackTrace();
             }

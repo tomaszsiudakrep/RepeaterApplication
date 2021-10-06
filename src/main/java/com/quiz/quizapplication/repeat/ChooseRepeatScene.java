@@ -1,10 +1,11 @@
-package com.quiz.quizapplication.scene.repeatScene;
+package com.quiz.quizapplication.repeat;
 
 import com.quiz.quizapplication.LauncherApplication;
-import com.quiz.quizapplication.controller.GroupChoiceBoxController;
-import com.quiz.quizapplication.controller.RepeatSceneController;
-import com.quiz.quizapplication.exercises.data.DataFromDb;
-import com.quiz.quizapplication.scene.BackgroundScene;
+import com.quiz.quizapplication.exercises.controller.add.AddExercisesGroupController;
+import com.quiz.quizapplication.repeat.commonRepeat.controller.CommonRepeatController;
+import com.quiz.quizapplication.scene.background.BackgroundScene;
+import com.quiz.quizapplication.repeat.commonRepeat.scene.RepeatScene;
+import com.quiz.quizapplication.repeat.testKnowledge.scene.TestSettingsScene;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,25 +17,23 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChooseRepeatScene extends Application {
 
-    private final BackgroundScene backgroundScene = new BackgroundScene();
-    DataFromDb dataFromDb = new DataFromDb();
-    GroupChoiceBoxController groupChoiceBoxController = new GroupChoiceBoxController();
-    RepeatSceneController repeatSceneController = new RepeatSceneController();
-    private final LauncherApplication launcherApplication = new LauncherApplication();
-    private RepeatScene repeatScene;
-    private TestSettingsScene testSettingsScene;
-    public static List<Integer> list = new ArrayList<>();
+    AddExercisesGroupController addExercisesGroupController = new AddExercisesGroupController();
+    CommonRepeatController commonRepeatController = new CommonRepeatController();
+    LauncherApplication launcherApplication = new LauncherApplication();
+    BackgroundScene backgroundScene = new BackgroundScene();
+    RepeatScene repeatScene;
+    TestSettingsScene testSettingsScene;
+    public static List<Integer> listToCommonRepeat = new ArrayList<>();
     public static ChoiceBox<String> groupChoiceBox;
 
     public ChooseRepeatScene() throws SQLException {
-        groupChoiceBox = new ChoiceBox<>(groupChoiceBoxController.create());
+        groupChoiceBox = new ChoiceBox<>(addExercisesGroupController.createObservableListToChoiceBox());
     }
 
     @Override
@@ -56,8 +55,6 @@ public class ChooseRepeatScene extends Application {
             vBoxTop.setPrefHeight(300);
             vBoxTop.setPrefWidth(150);
             vBoxTop.setStyle("-fx-background-color: #7961be");
-
-
 
         Label repeatLabel = new Label("Repeat");
             repeatLabel.setPrefHeight(15);
@@ -86,9 +83,6 @@ public class ChooseRepeatScene extends Application {
             testKnowledgeButton.setPrefWidth(150);
             testKnowledgeButton.setPrefHeight(50);
             testKnowledgeButton.setStyle("-fx-background-color: #6857A5; -fx-font-size: 12; -fx-text-fill: white;-fx-underline: true; -fx-border-width:1; -fx-border-color:#8981A7");
-
-
-
         Button backToMenu = new Button("Back to menu");
             backToMenu.setPrefWidth(150);
             backToMenu.setPrefHeight(50);
@@ -96,8 +90,6 @@ public class ChooseRepeatScene extends Application {
 
         anchorPane.getChildren().add(0, vBoxBottom);
         anchorPane.getChildren().add(1, vBoxTop);
-
-
 
         vBoxBottom.getChildren().add(0, backToMenu);
 
@@ -123,7 +115,7 @@ public class ChooseRepeatScene extends Application {
         commonRepeat.setOnAction(event ->
         {
             try {
-                list = repeatSceneController.createListOfExercises();
+                commonRepeatController.createListOfExercises();
                 repeatScene.start(primaryStage);
             } catch (Exception e) {
                 e.printStackTrace();

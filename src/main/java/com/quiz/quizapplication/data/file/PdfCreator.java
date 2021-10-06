@@ -1,4 +1,4 @@
-package com.quiz.quizapplication.data;
+package com.quiz.quizapplication.data.file;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;

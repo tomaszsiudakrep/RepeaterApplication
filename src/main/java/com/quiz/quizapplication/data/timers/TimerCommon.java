@@ -1,4 +1,4 @@
-package com.quiz.quizapplication.data;
+package com.quiz.quizapplication.data.timers;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -77,8 +77,9 @@ public class TimerCommon {
         hours_string = String.format("%02d", hours);
         timeLabel.setText(hours_string + ":" + minutes_string + ":" + seconds_string);
         startButton.setText("START");
-
     }
+
+
 
     public static void startTimer() {
         timer.start();

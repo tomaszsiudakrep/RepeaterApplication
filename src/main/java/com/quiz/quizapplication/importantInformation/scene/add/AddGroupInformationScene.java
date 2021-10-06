@@ -1,8 +1,8 @@
-package com.quiz.quizapplication.importantInformation.add;
+package com.quiz.quizapplication.importantInformation.scene.add;
 
-import com.quiz.quizapplication.importantInformation.controller.AddGroupController;
-import com.quiz.quizapplication.scene.BackgroundScene;
-import com.quiz.quizapplication.scene.addScene.ChooseAddScene;
+import com.quiz.quizapplication.importantInformation.controller.add.AddInformationGroupController;
+import com.quiz.quizapplication.scene.background.BackgroundScene;
+import com.quiz.quizapplication.scene.add.ChooseAddScene;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,14 +22,14 @@ import java.sql.SQLException;
 public class AddGroupInformationScene extends Application {
 
     BackgroundScene backgroundScene = new BackgroundScene();
-    AddGroupController addGroupController = new AddGroupController();
+    AddInformationGroupController addInformationGroupController = new AddInformationGroupController();
     ChooseAddScene chooseAddScene;
     public static TextField groupTextField;
     public static TextField newNameOfGroupTextField;
     public static ChoiceBox<String> choiceBox;
 
     public AddGroupInformationScene() throws SQLException {
-        choiceBox = new ChoiceBox<>(addGroupController.createObservableListToChoiceBox());
+        choiceBox = new ChoiceBox<>(addInformationGroupController.createObservableListToChoiceBox());
     }
 
     @Override
@@ -119,7 +119,7 @@ public class AddGroupInformationScene extends Application {
 
         addGroupButton.setOnAction(event -> {
             try {
-                addGroupController.addGroupImportantInformation();
+                addInformationGroupController.addGroupImportantInformation();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -127,7 +127,7 @@ public class AddGroupInformationScene extends Application {
 
         changeNameButton.setOnAction(event -> {
             try {
-                addGroupController.changeGroupName();
+                addInformationGroupController.changeGroupName();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -135,7 +135,7 @@ public class AddGroupInformationScene extends Application {
 
         deleteGroupButton.setOnAction(event -> {
             try {
-                addGroupController.deleteGroup();
+                addInformationGroupController.deleteGroup();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

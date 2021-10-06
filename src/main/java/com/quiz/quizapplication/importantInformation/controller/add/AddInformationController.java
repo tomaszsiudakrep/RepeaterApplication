@@ -1,43 +1,48 @@
-package com.quiz.quizapplication.importantInformation.controller;
+package com.quiz.quizapplication.importantInformation.controller.add;
 
-import com.quiz.quizapplication.LoadSolution;
+import com.quiz.quizapplication.data.file.LoadFileTxt;
 import com.quiz.quizapplication.importantInformation.objects.ImportantInformation;
-import com.quiz.quizapplication.importantInformation.data.AlertInformation;
-import com.quiz.quizapplication.importantInformation.data.GroupDataBase;
-import com.quiz.quizapplication.importantInformation.data.ImportantInformationDataBase;
-
+import com.quiz.quizapplication.data.alerts.AlertAddObject;
+import com.quiz.quizapplication.importantInformation.data.add.DataAddInformationGroup;
+import com.quiz.quizapplication.importantInformation.data.add.DataAddImportantInformation;
 import java.io.IOException;
 import java.sql.SQLException;
 
 public class AddInformationController {
 
     ImportantInformation importantInformation;
-    GroupDataBase groupDataBase = new GroupDataBase();
-    ImportantInformationDataBase importantInformationDataBase = new ImportantInformationDataBase();
-    AlertInformation alertInformation = new AlertInformation();
-    LoadSolution loadSolution = new LoadSolution();
+    DataAddInformationGroup dataAddInformationGroup = new DataAddInformationGroup();
+    DataAddImportantInformation dataAddImportantInformation = new DataAddImportantInformation();
+    AlertAddObject alertAddObject = new AlertAddObject();
+    LoadFileTxt loadFileTxt = new LoadFileTxt();
 
     public void addInformation() throws SQLException {
-        String title = importantInformationDataBase.downloadTitleInformation();
-        String description = importantInformationDataBase.downloadInformationDescription();
-        String groupName = importantInformationDataBase.downloadGroupFromChoiceBox();
-        int groupId = groupDataBase.checkGroupId(groupName);
-        importantInformation = importantInformationDataBase.createImportantInformationObject(title, description);
-        String sqlQuery = importantInformationDataBase.sqlQueryAddInformation(groupId);
-        if (!title.equals("") && groupName != null && !description.equals("")) {
-            boolean result = importantInformationDataBase.addInformation(sqlQuery);
-            if (result) alertInformation.informationHasBeenAdded();
-            else alertInformation.informationWasNotAdded();
+        String title = dataAddImportantInformation.downloadTitle();
+        String description = dataAddImportantInformation.downloadDescription();
+        String groupName = dataAddImportantInformation.downloadGroupFromChoiceBox();
+        int groupId = dataAddInformationGroup.checkGroupId(groupName);
+        boolean resultCheckExist = dataAddImportantInformation.checkIfObjectAlreadyExistInGroup(title, groupId);
+        if (!resultCheckExist) {
+            importantInformation = dataAddImportantInformation.createImportantInformationObject(title, description);
+            if (!title.equals("") && groupName != null && !description.equals("")) {
+                boolean result = dataAddImportantInformation.addImportantInformation(groupId, importantInformation);
+                if (result) alertAddObject.informationHasBeenAdded();
+                else alertAddObject.informationWasNotAdded();
+                dataAddImportantInformation.clearTextField();
+            } else {
+                alertAddObject.informationTextFieldOrGroupIsEmpty();
+            }
         } else {
-            alertInformation.informationTextFieldOrGroupIsEmpty();
+            alertAddObject.informationAlreadyExist();
         }
-        AlertInformation.dialogInformation.show();
-        importantInformationDataBase.clearTextField();
+        AlertAddObject.dialogInformation.show();
+
     }
 
     public void createFile() throws IOException {
-        String title = importantInformationDataBase.downloadTitleInformation();
-        String groupName = importantInformationDataBase.downloadGroupFromChoiceBox();
-        if (!title.equals("") && groupName != null) loadSolution.loadImportantInformation(groupName, title);
+        String title = dataAddImportantInformation.downloadTitle();
+        String groupName = dataAddImportantInformation.downloadGroupFromChoiceBox();
+        if (!title.equals("") && groupName != null) loadFileTxt.loadImportantInformation(groupName, title);
     }
+
 }

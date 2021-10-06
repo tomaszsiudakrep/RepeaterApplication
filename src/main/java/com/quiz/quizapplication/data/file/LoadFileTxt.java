@@ -1,8 +1,8 @@
-package com.quiz.quizapplication.data;
+package com.quiz.quizapplication.data.file;
 
 import java.io.*;
 
-public class LoadSolution {
+public class LoadFileTxt {
 
 public static String exercises_path = "E:\\gibon\\Desktop\\Repositorium\\QuizApplication\\src\\main\\resources\\solutions\\ex";
 public static String information_path = "E:\\gibon\\Desktop\\IT\\ImportantInformation\\";

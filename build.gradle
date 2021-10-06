@@ -9,7 +9,7 @@ plugins {
 group = 'com.quiz'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
-mainClassName = 'com.quiz.quizapplication.RepeatExercisesApplication'
+mainClassName = 'com.quiz.quizapplication.LauncherApplication'
 
 configurations {
     compileOnly {
@@ -41,6 +41,8 @@ dependencies {
 //    implementation 'org.springframework.boot:spring-boot-starter-web'
 //    compileOnly 'org.projectlombok:lombok'
 //    annotationProcessor 'org.projectlombok:lombok'
+    implementation group: 'com.itextpdf', name: 'itextpdf', version: '5.5.13.2'
+
 }
 
 test {

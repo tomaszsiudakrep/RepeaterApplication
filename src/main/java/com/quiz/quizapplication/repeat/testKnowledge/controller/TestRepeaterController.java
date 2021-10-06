@@ -1,33 +1,39 @@
-package com.quiz.quizapplication.controller;
+package com.quiz.quizapplication.repeat.testKnowledge.controller;
 
-import com.quiz.quizapplication.CountdownTimer;
-import com.quiz.quizapplication.exercises.data.GroupExToDb;
-import com.quiz.quizapplication.repeat.testKnowledge.data.TestSettings;
-import com.quiz.quizapplication.scene.repeatScene.TestSettingsScene;
-
+import com.quiz.quizapplication.data.timers.CountdownTimer;
+import com.quiz.quizapplication.repeat.testKnowledge.data.DataTest;
+import com.quiz.quizapplication.repeat.testKnowledge.data.DataTestSettings;
+import com.quiz.quizapplication.repeat.testKnowledge.scene.TestScene;
 import java.sql.SQLException;
 
 public class TestRepeaterController {
 
-    TestSettings testSettings = new TestSettings();
-    GroupExToDb groupExToDb = new GroupExToDb();
+    DataTestSettings dataTestSettings = new DataTestSettings();
+    DataTest dataTest = new DataTest();
 
     public void startTest() throws SQLException {
-        testSettings.createlist();
-        testSettings.sizeOfList();
-        testSettings.randomExerciseFromList();
-        testSettings.displayExercises();
+        dataTestSettings.createList();
+        dataTestSettings.sizeOfList();
+        dataTestSettings.randomExerciseFromList();
+        dataTestSettings.displayExercises();
         CountdownTimer.start();
     }
 
-    public void nextRandomExercise() throws SQLException {
-        testSettings.randomExerciseFromList();
-        testSettings.displayExercises();
-    }
-
     public boolean checkIfGroupIsEmpty() throws SQLException {
-        return groupExToDb.countOfExInGroup(TestSettingsScene.groupName);
+        String groupName = dataTestSettings.downloadGroupName();
+        return dataTestSettings.countOfExInGroup(groupName);
     }
 
+    public void nextRandomExercise() throws SQLException {
+        dataTest.counterPlusPlus();
+        dataTest.setTextInLabel();
+        dataTest.nextRandomExercise();
+        boolean result = dataTest.checkIfCounterEqualCountOfExercises();
+        if (result) TestScene.nextExercisesButton.setDisable(true);
+    }
+
+    public void initializeCounter() {
+        TestScene.counter = 1;
+    }
 
 }

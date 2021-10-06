@@ -1,9 +1,8 @@
-package com.quiz.quizapplication.exercises.controller;
+package com.quiz.quizapplication.exercises.controller.exercises;
 
 import com.quiz.quizapplication.exercises.data.exercises.DataExercises;
-import com.quiz.quizapplication.exercises.data.sqlQuery.SqlQueryExercises;
-import com.quiz.quizapplication.importantInformation.data.importantInformation.ImportantInformationAlert;
-import com.quiz.quizapplication.importantInformation.scene.importantInformation.ImportantInformationScene;
+import com.quiz.quizapplication.exercises.scene.ownExercises.OwnExercisesScene;
+import com.quiz.quizapplication.data.alerts.AlertObject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
@@ -14,18 +13,18 @@ import java.util.List;
 public class ExercisesController {
 
     DataExercises dataExercises = new DataExercises();
-    ImportantInformationAlert importantInformationAlert = new ImportantInformationAlert();
-    SqlQueryExercises sqlQueryExercises = new SqlQueryExercises();
+    AlertObject alertObject = new AlertObject();
     public static String groupNameFromChoiceBox;
 
     public ObservableList<String> createObservableListToListView() throws SQLException {
-        String sqlQuery = sqlQueryExercises.sqlQuerySelectAllFromExercises();
+        String sqlQuery = "SELECT * FROM EXERCISES WHERE ARCHIVED = 0 ORDER BY GROUP_ID";
         List<String> list = dataExercises.createList(sqlQuery);
         return dataExercises.observableList(list);
     }
 
     public ObservableList<String> createObservableListToListViewByGroup(String groupName) throws SQLException {
-        String sqlQuery = sqlQueryExercises.sqlQuerySelectAllFromExercisesWhereGroup(groupName);
+        String sqlQuery = "SELECT * FROM EXERCISES WHERE ARCHIVED = 0 AND GROUP_ID = " +
+                "(SELECT ID FROM GROUP_EXERCISES WHERE NAME = '" + groupName + "')";
         List<String> list = dataExercises.createList(sqlQuery);
         return dataExercises.observableList(list);
     }
@@ -36,81 +35,88 @@ public class ExercisesController {
         String groupName = groupNameFromChoiceBox;
         ObservableList<String> observableList = createObservableListToListViewByGroup(groupName);
         if (groupName != null && observableList.size() > 0) {
-            ImportantInformationScene.listView = new ListView<>(observableList);
-            ImportantInformationScene.groupChoiceBox.setValue(groupNameFromChoiceBox);
+            OwnExercisesScene.listView = new ListView<>(observableList);
+            OwnExercisesScene.groupChoiceBox.setValue(groupNameFromChoiceBox);
         } else if (groupName == null){
-            ImportantInformationScene.listView = new ListView<>(fullListToListView);
+            OwnExercisesScene.listView = new ListView<>(fullListToListView);
         } else {
-            ImportantInformationScene.listView = new ListView<>(emptyList);
-            ImportantInformationScene.groupChoiceBox.setValue(groupNameFromChoiceBox);
+            OwnExercisesScene.listView = new ListView<>(emptyList);
+            OwnExercisesScene.groupChoiceBox.setValue(groupNameFromChoiceBox);
         }
     }
 
-    public String downloadGroupFromChoiceBox() {
-        return groupNameFromChoiceBox = ImportantInformationScene.groupChoiceBox.getValue();
+    public void downloadGroupFromChoiceBox() {
+        groupNameFromChoiceBox = OwnExercisesScene.groupChoiceBox.getValue();
     }
 
-    public void deleteImportantInformation() throws SQLException {
+    public void deleteChosenExercises() {
         String listViewItem = dataExercises.downloadChosenElementFromListView();
         if (listViewItem != null) {
-            int informationId = dataExercises.returnIdInformationFromListViewItem(listViewItem);
-            String sqlQuery = sqlQueryExercises.sqlQueryDeleteExercises(informationId);
-            ImportantInformationAlert.dialogConfirmation.showAndWait();
-            if (ImportantInformationAlert.dialogConfirmation.getResult() == ButtonType.OK) {
-                boolean resultDelete = dataExercises.deleteInformation(sqlQuery);
-                if (resultDelete) importantInformationAlert.informationHasBeenDeleted();
-                else importantInformationAlert.informationWasNotDeleted();
-                ImportantInformationAlert.dialogInformation.show();
+            int exerciseId = dataExercises.returnIdInformationFromListViewItem(listViewItem);
+            AlertObject.dialogConfirmation.showAndWait();
+            if (AlertObject.dialogConfirmation.getResult() == ButtonType.OK) {
+                boolean resultDelete = dataExercises.deleteExercise(exerciseId);
+                if (resultDelete) alertObject.informationHasBeenDeleted();
+                else alertObject.informationWasNotDeleted();
+                AlertObject.dialogInformation.show();
             }
         }
     }
 
-    public void changeTitleInformation() {
+    public void deleteAllExercises() {
+        AlertObject.dialogConfirmationAll.showAndWait();
+        if (AlertObject.dialogConfirmationAll.getResult() == ButtonType.OK) {
+            boolean resultDeleteAll = dataExercises.deleteAllExercises();
+            if (resultDeleteAll) alertObject.allInformationHasBeenDeleted();
+            else alertObject.allInformationWasNotDeleted();
+            AlertObject.dialogInformation.show();
+        }
+    }
+
+    public void changeTitleExercises() {
         String listViewItem = dataExercises.downloadChosenElementFromListView();
         String newTitle = dataExercises.downloadTitleFromChangeTitleTextField();
         if (!newTitle.equals("") && listViewItem != null) {
             int informationId = dataExercises.returnIdInformationFromListViewItem(listViewItem);
-            String sqlQueryReturnGroupId = sqlQueryExercises.sqlQueryReturnGroupIdByExercisesId(informationId);
-            int groupId = dataExercises.returnGroupIdFromTableInformation(sqlQueryReturnGroupId);
-            String sqlQueryCheckIfNewTitleExist = sqlQueryExercises.sqlQueryCheckIfNewTitleIsExistInGroup(groupId, newTitle);
-            boolean result = dataExercises.checkIfNewTitleExist(sqlQueryCheckIfNewTitleExist);
+            int groupId = dataExercises.returnGroupIdFromTableInformation(informationId);
+            boolean result = dataExercises.checkIfNewTitleExist(groupId, newTitle);
             if (!result) {
-                String sqlQueryUpdate = sqlQueryExercises.sqlQueryUpdateTitle(informationId, newTitle);
-                boolean resultUpdate = dataExercises.updateTitle(sqlQueryUpdate);
+                boolean resultUpdate = dataExercises.updateTitle(newTitle, informationId);
                 if (resultUpdate) {
-                    importantInformationAlert.titleHasBeenChanged();
-                    ImportantInformationScene.changeTitleTextField.clear();
+                    alertObject.titleHasBeenChanged();
+                    OwnExercisesScene.changeTitleTextField.clear();
                 }
-                else importantInformationAlert.titleWasNotChanged();
+                else alertObject.titleWasNotChanged();
             } else {
-                importantInformationAlert.newTitleIsAlreadyExist();
+                alertObject.newTitleIsAlreadyExist();
             }
         } else {
-            importantInformationAlert.newTitleIsEmptyOrItemFromListViewIsNull();
+            alertObject.newTitleIsEmptyOrItemFromListViewIsNull();
         }
-        ImportantInformationAlert.dialogInformation.show();
+        AlertObject.dialogInformation.show();
     }
 
-    public void changeGroup() {
+    public void changeGroupExercises() {
         String groupName = dataExercises.downloadNewGroupFromChoiceBox();
         String chosenItemList = dataExercises.downloadChosenElementFromListView();
         if (groupName != null && chosenItemList != null) {
-            String sqlQueryReturnId = sqlQueryExercises.sqlQueryReturnGroupIdByNameOfGroup(groupName);
-            int chosenGroupId = dataExercises.returnGroupIdFromTableGroup(sqlQueryReturnId);
+            int chosenGroupId = dataExercises.returnGroupIdFromTableGroup(groupName);
             String titleOfInformation = dataExercises.returnTitleInformationFromListViewItem(chosenItemList);
-            String sqlQueryCheckIfTitleExist = sqlQueryExercises.sqlQueryCheckIfNewTitleIsExistInGroup(chosenGroupId, titleOfInformation);
-            boolean result = dataExercises.checkIfNewTitleExist(sqlQueryCheckIfTitleExist);
+            boolean result = dataExercises.checkIfNewTitleExist(chosenGroupId, titleOfInformation);
             if (!result) {
                 int informationId = dataExercises.returnIdInformationFromListViewItem(chosenItemList);
-                String sqlQueryChangeGroup = sqlQueryExercises.sqlQueryUpdateGroup(chosenGroupId, informationId);
-                dataExercises.changeGroup(sqlQueryChangeGroup);
-                importantInformationAlert.groupHasBeenChanged();
+                dataExercises.changeGroup(chosenGroupId, informationId);
+                alertObject.groupHasBeenChanged();
             } else {
-                importantInformationAlert.groupWasNotChanged();
+                alertObject.groupWasNotChanged();
             }
         } else {
-            importantInformationAlert.newGroupIsNullOrItemFromListViewIsNull();
+            alertObject.newGroupIsNullOrItemFromListViewIsNull();
         }
-        ImportantInformationAlert.dialogInformation.show();
+        AlertObject.dialogInformation.show();
+    }
+
+    public long sizeOfListView() {
+        return dataExercises.sizeOfListView();
     }
 }

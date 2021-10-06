@@ -1,4 +1,4 @@
-package com.quiz.quizapplication.data;
+package com.quiz.quizapplication.data.music;
 
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;

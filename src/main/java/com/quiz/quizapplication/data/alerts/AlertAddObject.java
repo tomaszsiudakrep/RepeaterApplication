@@ -2,11 +2,11 @@ package com.quiz.quizapplication.data.alerts;
 
 import javafx.scene.control.Alert;
 
-public class AlertAddInformation {
+public class AlertAddObject {
 
     public static Alert dialogInformation = new Alert(Alert.AlertType.INFORMATION);
 
-    public AlertAddInformation() {
+    public AlertAddObject() {
         dialogInformation.setTitle("Information");
     }
 
