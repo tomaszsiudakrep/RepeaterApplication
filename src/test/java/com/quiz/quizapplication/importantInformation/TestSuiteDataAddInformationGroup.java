@@ -13,7 +13,7 @@ import java.util.List;
 public class TestSuiteDataAddInformationGroup {
 
     DataAddInformationGroup dataAddInformationGroup;
-    static int counter = 0;
+    int counter = 0;
 
     @BeforeEach
     public void initialize() {
@@ -32,10 +32,9 @@ public class TestSuiteDataAddInformationGroup {
         return counter;
     }
 
-    @BeforeAll
-    @AfterAll
-    static void clean() throws SQLException {
-        String sqlQuery = "DELETE FROM IMPORTANT_INFORMATION; DELETE FROM GROUP_IMPORTANT_INFORMATION;";
+    @BeforeEach
+    void clean() throws SQLException {
+        String sqlQuery = "DELETE FROM IMPORTANT_INFORMATION; DELETE FROM GROUP_IMPORTANT_INFORMATION; DELETE FROM EXERCISES; DELETE FROM GROUP_EXERCISES";
         Statement statement = ConnectToDb.getInstance().getConn().createStatement();
             statement.executeUpdate(sqlQuery);
             statement.close();
@@ -114,7 +113,6 @@ public class TestSuiteDataAddInformationGroup {
         //Then
         Assertions.assertEquals(expectedList, resultList);
         Assertions.assertEquals(2, size);
-
     }
 
     @Test

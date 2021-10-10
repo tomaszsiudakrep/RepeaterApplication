@@ -14,8 +14,8 @@ public class TestSuiteDataAddImportantInformation {
 
     DataAddInformationGroup dataAddInformationGroup;
     DataAddImportantInformation dataAddImportantInformation;
-    static int groupId;
-    static int counter;
+    int groupId;
+    int counter;
 
     @BeforeEach
     public void initialize() {
@@ -23,9 +23,8 @@ public class TestSuiteDataAddImportantInformation {
         dataAddImportantInformation = new DataAddImportantInformation();
     }
 
-    @BeforeAll
-    @AfterAll
-    static void clean() throws SQLException {
+    @BeforeEach
+    void clean() throws SQLException {
         String sqlQuery = "DELETE FROM IMPORTANT_INFORMATION; DELETE FROM GROUP_IMPORTANT_INFORMATION";
         Statement statement = ConnectToDb.getInstance().getConn().createStatement();
             statement.executeUpdate(sqlQuery);
